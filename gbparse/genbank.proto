@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package gbparse;
+
+message Genbank {
+  string LOCUS = 1;
+  string ACCESSION = 2;
+  string DEFINITION = 3;
+  string VERSION = 4;
+  string DBLINK = 5;
+  string KEYWORDS = 6;
+  string SOURCE = 7;
+  string ORGANISM = 8;
+  string COMMENT = 9;
+  string SEQUENCE = 10;
+  repeated Reference REFERENCES = 11;
+  repeated Feature FEATURES = 12;
+}
+
+message Reference {
+  int32 Number = 1;
+  string AUTHORS = 2;
+  string TITLE = 3;
+  string JOURNAL = 4;
+  string PUBMED = 5;
+}
+
+message Feature {
+  string TYPE = 1;
+  bool isCompliment = 2;
+  string START = 3;
+  string STOP = 4;
+  map<string, string> QUALIFIERS = 5;
+}
