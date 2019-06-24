@@ -53,7 +53,9 @@ func (parser GBParser) ReadAndParseFile(reader io.Reader, mainwg *sync.WaitGroup
 		currentLine++
 	}
 	// Handle occured errors
-	handleError(scanner.Err())
+	if scanner.Err() != nil {
+		log.Fatal(scanner.Err())
+	}
 	// Waitgroup -> Done
 	mainwg.Done()
 }
@@ -262,11 +264,4 @@ func printRecord(gbRecord *Genbank) {
 		}
 	}
 
-}
-
-// Error Handler
-func handleError(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
 }
