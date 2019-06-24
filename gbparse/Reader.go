@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"compress/gzip"
 	"fmt"
-	"github.com/golang/protobuf/proto"
 	"log"
 	"net/http"
 	"regexp"
@@ -13,20 +12,21 @@ import (
 )
 
 type GBParser struct {
-	output chan *[]byte
+	output chan *Genbank
 }
 
 func (gb *GBParser) Init() {
-	gb.output = make(chan *[]byte, 10)
+	gb.output = make(chan *Genbank, 10000)
 }
 
-func (parser GBParser) ReadAndParseFile(filename *http.Response, mainwg *sync.WaitGroup) {
+func (parser GBParser) ReadAndParseFile(reader *http.Response, mainwg *sync.WaitGroup) {
 
 	// Open File & Handle Error
 	// Open Gzip Stream and Handle Error
 	gz, err := gzip.NewReader(filename.Body)
+	defer filename.Body.Close()
 	handleError(err)
-
+	defer gz.Close()
 	// Close file & Gzip stream when finished
 
 	// Scan GzipStream
@@ -70,19 +70,16 @@ func (parser GBParser) ReadAndParseFile(filename *http.Response, mainwg *sync.Wa
 	mainwg.Done()
 }
 
-func parseRecord(lines *[]string, startpoint int, startpointqual int, startpointseq int, startpointnext int, wg *sync.WaitGroup, output chan<- *[]byte) {
+func parseRecord(lines *[]string, startpoint int, startpointqual int, startpointseq int, startpointnext int, wg *sync.WaitGroup, output chan<- *Genbank) {
 	// TODO: Mach damit was !
-	// fmt.Println(startpoint, startpointqual, startpointseq, startpointnext)
+	fmt.Println(startpoint, startpointqual, startpointseq, startpointnext)
 	currentGenbankRecord := &Genbank{}
 	parseHeader((*lines)[startpoint:startpointqual], currentGenbankRecord)
 	parseQualifier((*lines)[startpointqual:startpointseq], currentGenbankRecord)
 	if startpointseq != startpointnext {
 		parseSequence((*lines)[startpointseq:startpointnext], currentGenbankRecord)
 	}
-	//printRecord(currentGenbankRecord)
-	data, err := proto.Marshal(currentGenbankRecord)
-	handleError(err)
-	output <- &data
+	output <- currentGenbankRecord
 	currentGenbankRecord = &Genbank{}
 	wg.Done()
 }
@@ -179,17 +176,6 @@ func parseHeader(lines []string, gbRecord *Genbank) {
 	}
 	// AddLastReference
 	RefList = append(RefList, currentRef)
-
-	//for k, v := range headerMap {
-	//	fmt.Println("k:", k, "v:", v)
-	//}
-	//for _, myMap := range RefList {
-	//	fmt.Println(myMap.Number)
-	//	fmt.Println(myMap.PUBMED)
-	//	fmt.Println(myMap.AUTHORS)
-	//	fmt.Println(myMap.JOURNAL)
-	//	fmt.Println(myMap.TITLE)
-	//}
 
 	gbRecord.REFERENCES = RefList
 }
