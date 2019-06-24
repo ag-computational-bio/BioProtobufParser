@@ -2,6 +2,7 @@ package main
 
 import (
 	"../gbparse"
+	"compress/gzip"
 	"fmt"
 	"log"
 	"net/http"
@@ -17,7 +18,9 @@ func main() {
 	parser.Init()
 	resp, err := http.Get("https://ftp.ncbi.nih.gov/refseq/release/complete/complete.1.genomic.gbff.gz")
 	handleError(err)
-	go parser.ReadAndParseFile(resp, &wg)
+	gz, err := gzip.NewReader(resp.Body)
+	handleError(err)
+	go parser.ReadAndParseFile(gz, &wg)
 	wg.Wait()
 	t := time.Now()
 	elapsed := t.Sub(start)

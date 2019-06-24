@@ -40,7 +40,6 @@ func (parser GBParser) ReadAndParseFile(reader io.Reader, mainwg *sync.WaitGroup
 			sequenceStart = currentLine
 			hasSequence = true
 		} else if strings.HasPrefix(line, "//") {
-			// TODO: GoRoutine ?!
 			if hasSequence {
 				mainwg.Add(1)
 				go parseRecord(&lines, recordStart, featureStart, sequenceStart, currentLine, mainwg, parser.output)
