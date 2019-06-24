@@ -20,6 +20,8 @@ func main() {
 	handleError(err)
 	gz, err := gzip.NewReader(resp.Body)
 	handleError(err)
+	defer resp.Body.Close()
+	defer gz.Close()
 	go parser.ReadAndParseFile(gz, &wg)
 	wg.Wait()
 	t := time.Now()

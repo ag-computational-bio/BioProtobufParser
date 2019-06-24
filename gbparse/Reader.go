@@ -31,7 +31,14 @@ func (parser GBParser) ReadAndParseFile(reader io.Reader, mainwg *sync.WaitGroup
 
 	// Iterate over Lines
 	for scanner.Scan() {
+
+		// Handle occured errors
+		if scanner.Err() != nil {
+			log.Fatal(scanner.Err())
+		}
+
 		line := scanner.Text()
+		fmt.Println(line)
 		lines = append(lines, line)
 		if strings.HasPrefix(line, "FEATURES") {
 			hasSequence = false
@@ -51,17 +58,13 @@ func (parser GBParser) ReadAndParseFile(reader io.Reader, mainwg *sync.WaitGroup
 		}
 		currentLine++
 	}
-	// Handle occured errors
-	if scanner.Err() != nil {
-		log.Fatal(scanner.Err())
-	}
 	// Waitgroup -> Done
 	mainwg.Done()
 }
 
 func parseRecord(lines *[]string, startpoint int, startpointqual int, startpointseq int, startpointnext int, wg *sync.WaitGroup, output chan<- *Genbank) {
 	// TODO: Mach damit was !
-	fmt.Println(startpoint, startpointqual, startpointseq, startpointnext)
+	// fmt.Println(startpoint, startpointqual, startpointseq, startpointnext)
 	currentGenbankRecord := &Genbank{}
 	parseHeader((*lines)[startpoint:startpointqual], currentGenbankRecord)
 	parseQualifier((*lines)[startpointqual:startpointseq], currentGenbankRecord)
