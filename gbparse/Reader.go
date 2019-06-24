@@ -2,10 +2,9 @@ package gbparse
 
 import (
 	"bufio"
-	"compress/gzip"
 	"fmt"
+	"io"
 	"log"
-	"net/http"
 	"regexp"
 	"strings"
 	"sync"
@@ -19,18 +18,9 @@ func (gb *GBParser) Init() {
 	gb.output = make(chan *Genbank, 10000)
 }
 
-func (parser GBParser) ReadAndParseFile(reader *http.Response, mainwg *sync.WaitGroup) {
+func (parser GBParser) ReadAndParseFile(reader io.Reader, mainwg *sync.WaitGroup) {
 
-	// Open File & Handle Error
-	// Open Gzip Stream and Handle Error
-	gz, err := gzip.NewReader(filename.Body)
-	defer filename.Body.Close()
-	handleError(err)
-	defer gz.Close()
-	// Close file & Gzip stream when finished
-
-	// Scan GzipStream
-	scanner := bufio.NewScanner(gz)
+	scanner := bufio.NewScanner(reader)
 
 	var lines []string
 	currentLine := 0
@@ -65,8 +55,6 @@ func (parser GBParser) ReadAndParseFile(reader *http.Response, mainwg *sync.Wait
 	// Handle occured errors
 	handleError(scanner.Err())
 	// Waitgroup -> Done
-	err = gz.Close()
-	handleError(err)
 	mainwg.Done()
 }
 
