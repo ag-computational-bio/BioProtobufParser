@@ -17,6 +17,7 @@ func main() {
 	parser := gbparse.GBParser{}
 	parser.Init()
 	resp, err := http.Get("https://ftp.ncbi.nih.gov/refseq/release/complete/complete.1.genomic.gbff.gz")
+	resp.Close = true
 	handleError(err)
 	gz, err := gzip.NewReader(resp.Body)
 	handleError(err)

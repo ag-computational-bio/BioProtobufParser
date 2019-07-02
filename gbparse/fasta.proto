@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package gbparse;
+
+message Fasta {
+  string HEADER = 1;
+  string ACCESSION = 2;
+  string VERSION = 3;
+  string SEQUENCE = 4;
+}

@@ -15,10 +15,10 @@ type GBParser struct {
 }
 
 func (gb *GBParser) Init() {
-	gb.output = make(chan *Genbank, 10000)
+	gb.output = make(chan *Genbank, 1000000)
 }
 
-func (parser GBParser) ReadAndParseFile(reader io.Reader, mainwg *sync.WaitGroup) {
+func (gb GBParser) ReadAndParseFile(reader io.Reader, mainwg *sync.WaitGroup) {
 
 	scanner := bufio.NewScanner(reader)
 
@@ -38,7 +38,7 @@ func (parser GBParser) ReadAndParseFile(reader io.Reader, mainwg *sync.WaitGroup
 		}
 
 		line := scanner.Text()
-		fmt.Println(line)
+		// DEBUG: fmt.Println(line)
 		lines = append(lines, line)
 		if strings.HasPrefix(line, "FEATURES") {
 			hasSequence = false
@@ -48,11 +48,9 @@ func (parser GBParser) ReadAndParseFile(reader io.Reader, mainwg *sync.WaitGroup
 			hasSequence = true
 		} else if strings.HasPrefix(line, "//") {
 			if hasSequence {
-				mainwg.Add(1)
-				go parseRecord(&lines, recordStart, featureStart, sequenceStart, currentLine, mainwg, parser.output)
+				go parseGBRecord(&lines, recordStart, featureStart, sequenceStart, currentLine, mainwg, gb.output)
 			} else {
-				mainwg.Add(1)
-				go parseRecord(&lines, recordStart, featureStart, currentLine, currentLine, mainwg, parser.output)
+				go parseGBRecord(&lines, recordStart, featureStart, currentLine, currentLine, mainwg, gb.output)
 			}
 			recordStart = currentLine
 		}
@@ -62,9 +60,9 @@ func (parser GBParser) ReadAndParseFile(reader io.Reader, mainwg *sync.WaitGroup
 	mainwg.Done()
 }
 
-func parseRecord(lines *[]string, startpoint int, startpointqual int, startpointseq int, startpointnext int, wg *sync.WaitGroup, output chan<- *Genbank) {
-	// TODO: Mach damit was !
-	// fmt.Println(startpoint, startpointqual, startpointseq, startpointnext)
+func parseGBRecord(lines *[]string, startpoint int, startpointqual int, startpointseq int, startpointnext int, wg *sync.WaitGroup, output chan *Genbank) {
+	wg.Add(1)
+	// DEBUG: fmt.Println(startpoint, startpointqual, startpointseq, startpointnext)
 	currentGenbankRecord := &Genbank{}
 	parseHeader((*lines)[startpoint:startpointqual], currentGenbankRecord)
 	parseQualifier((*lines)[startpointqual:startpointseq], currentGenbankRecord)
@@ -72,7 +70,7 @@ func parseRecord(lines *[]string, startpoint int, startpointqual int, startpoint
 		parseSequence((*lines)[startpointseq:startpointnext], currentGenbankRecord)
 	}
 	output <- currentGenbankRecord
-	currentGenbankRecord = &Genbank{}
+	fmt.Println(len(output))
 	wg.Done()
 }
 
