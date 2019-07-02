@@ -4,6 +4,18 @@ import (
 	"gbparsertest2/gbparse"
 )
 
-func generateGBfromproto(record *gbparse.Genbank) {
+func GenerateGBfromproto(record *gbparse.Genbank) {
+
+}
+
+func generateHeaderString() {
+
+}
+
+func generateQualifierString() {
+
+}
+
+func generateSequenceString() {
 
 }

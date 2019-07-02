@@ -34,7 +34,7 @@ func fasta() {
 }
 
 func fastaWritefile(parser *gbparse.FASTAParser) {
-	f, err := os.Create("test.fasta")
+	f, err := os.Create("./testdata/test.fasta")
 	if err != nil {
 		fmt.Println(err)
 		return
