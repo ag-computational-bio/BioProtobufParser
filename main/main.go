@@ -6,11 +6,31 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 )
 
 func main() {
+	//genbank()
+	fasta()
+}
+
+func fasta() {
+	var wg sync.WaitGroup
+	wg.Add(1)
+	file, err := os.Open("/home/basti/Schreibtisch/testdata/complete.1.1.genomic(1).fna")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+	parser := gbparse.FASTAParser{}
+	parser.Init()
+	go parser.ReadAndParseFile(file, &wg)
+	wg.Wait()
+}
+
+func genbank() {
 	var wg sync.WaitGroup
 	start := time.Now()
 	wg.Add(1)

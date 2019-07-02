@@ -2,6 +2,7 @@ package gbparse
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"log"
 	"regexp"
@@ -14,10 +15,12 @@ type FASTAParser struct {
 }
 
 func (fastaparser *FASTAParser) Init() {
-	fastaparser.output = make(chan *Fasta, 1000000)
+	fastaparser.output = make(chan *Fasta, 10000000)
 }
 
 func (fastaparser FASTAParser) ReadAndParseFile(reader io.Reader, mainwg *sync.WaitGroup) {
+
+	counter := 0
 
 	scanner := bufio.NewScanner(reader)
 	header := ""
@@ -34,7 +37,9 @@ func (fastaparser FASTAParser) ReadAndParseFile(reader io.Reader, mainwg *sync.W
 		line := scanner.Text()
 		if strings.HasPrefix(line, ">") {
 			if header != "" {
+				fmt.Println(counter)
 				go parseFastaRecord(header, sequence, mainwg, fastaparser.output)
+				counter++
 			}
 			header = line
 			sequence = ""
@@ -58,6 +63,5 @@ func parseFastaRecord(header string, sequence string, wg *sync.WaitGroup, output
 	currentFastaRecord.SEQUENCE = sequence
 	currentFastaRecord.HEADER = header
 	output <- currentFastaRecord
-
 	wg.Done()
 }
