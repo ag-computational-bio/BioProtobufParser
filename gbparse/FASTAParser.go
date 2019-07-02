@@ -10,11 +10,11 @@ import (
 )
 
 type FASTAParser struct {
-	output chan *Fasta
+	Output chan *Fasta
 }
 
 func (fastaparser *FASTAParser) Init() {
-	fastaparser.output = make(chan *Fasta, 10000000)
+	fastaparser.Output = make(chan *Fasta, 10000000)
 }
 
 func (fastaparser FASTAParser) ReadAndParseFile(reader io.Reader, mainwg *sync.WaitGroup) {
@@ -34,7 +34,7 @@ func (fastaparser FASTAParser) ReadAndParseFile(reader io.Reader, mainwg *sync.W
 		line := scanner.Text()
 		if strings.HasPrefix(line, ">") {
 			if header != "" {
-				go parseFastaRecord(header, sequence, mainwg, fastaparser.output)
+				go parseFastaRecord(header, sequence, mainwg, fastaparser.Output)
 			}
 			header = line
 			sequence = ""
@@ -43,7 +43,7 @@ func (fastaparser FASTAParser) ReadAndParseFile(reader io.Reader, mainwg *sync.W
 		}
 	}
 	// Letztes Record parsen
-	go parseFastaRecord(header, sequence, mainwg, fastaparser.output)
+	go parseFastaRecord(header, sequence, mainwg, fastaparser.Output)
 	// Waitgroup -> Done
 	mainwg.Done()
 }

@@ -5,8 +5,8 @@ import (
 	"gbparsertest2/gbparse"
 )
 
-func generateFastafromproto(record *gbparse.Fasta) (fastarecord string) {
-	return record.HEADER + "\n" + insertNth(record.SEQUENCE, 81)
+func GenerateFastafromproto(record *gbparse.Fasta) (fastarecord string) {
+	return record.HEADER + "\n" + insertNth(record.SEQUENCE, 80) + "\n"
 }
 
 func insertNth(s string, n int) string {

@@ -1,9 +1,10 @@
 package main
 
 import (
-	"../gbparse"
 	"compress/gzip"
 	"fmt"
+	"gbparsertest2/gbparse"
+	"gbparsertest2/generators"
 	"log"
 	"net/http"
 	"os"
@@ -28,6 +29,29 @@ func fasta() {
 	parser.Init()
 	go parser.ReadAndParseFile(file, &wg)
 	wg.Wait()
+	close(parser.Output)
+	fastaWritefile(&parser)
+}
+
+func fastaWritefile(parser *gbparse.FASTAParser) {
+	f, err := os.Create("test.fasta")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	for record := range parser.Output {
+		_, err = f.WriteString(generators.GenerateFastafromproto(record))
+		if err != nil {
+			fmt.Println(err)
+			f.Close()
+			return
+		}
+	}
+	err = f.Close()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 }
 
 func genbank() {
