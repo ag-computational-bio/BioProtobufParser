@@ -196,6 +196,8 @@ func parseQualifier(lines []string, gbRecord *Genbank) {
 			} else {
 				qualMap[currentType] += line[21:]
 			}
+		case "CONTIG":
+			gbRecord.CONTIG = line[12:]
 		default:
 			currentType = wordRegEx.FindString(line[0:21])
 			if currentType != "FEATURES" {

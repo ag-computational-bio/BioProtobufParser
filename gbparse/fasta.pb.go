@@ -6,9 +6,13 @@ Package gbparse is a generated protocol buffer package.
 
 It is generated from these files:
 	fasta.proto
+	genbank.proto
 
 It has these top-level messages:
 	Fasta
+	Genbank
+	Reference
+	Feature
 */
 package gbparse
 

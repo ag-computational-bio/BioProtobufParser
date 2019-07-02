@@ -13,8 +13,9 @@ message Genbank {
   string ORGANISM = 8;
   string COMMENT = 9;
   string SEQUENCE = 10;
-  repeated Reference REFERENCES = 11;
-  repeated Feature FEATURES = 12;
+  string CONTIG = 11;
+  repeated Reference REFERENCES = 12;
+  repeated Feature FEATURES = 13;
 }
 
 message Reference {
