@@ -20,10 +20,11 @@ message Genbank {
 
 message Reference {
   int32 Number = 1;
-  string AUTHORS = 2;
-  string TITLE = 3;
-  string JOURNAL = 4;
-  string PUBMED = 5;
+  string ORIGIN = 2;
+  string AUTHORS = 3;
+  string TITLE = 4;
+  string JOURNAL = 5;
+  string PUBMED = 6;
 }
 
 message Feature {

@@ -115,6 +115,7 @@ func parseHeader(lines []string, gbRecord *Genbank) {
 					RefList = append(RefList, currentRef)
 				}
 				currentRef = &Reference{}
+				currentRef.ORIGIN = line[12:]
 				currentReference++
 				currentRef.Number = int32(currentReference)
 			case "  AUTHORS   ":
