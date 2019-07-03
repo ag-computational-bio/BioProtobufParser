@@ -135,7 +135,7 @@ func parseHeader(lines []string, gbRecord *Genbank) {
 			default:
 				switch beforeCategory {
 				case "COMMENT":
-					gbRecord.COMMENT += line[11:]
+					gbRecord.COMMENT += "\n" + line[12:]
 				case "  AUTHORS":
 					currentRef.AUTHORS += line[12:]
 				case "  TITLE":
@@ -153,13 +153,13 @@ func parseHeader(lines []string, gbRecord *Genbank) {
 				case "VERSION":
 					gbRecord.VERSION += line[11:]
 				case "DBLINK":
-					gbRecord.DBLINK += line[11:]
+					gbRecord.DBLINK += "\n" + line[12:]
 				case "KEYWORDS":
 					gbRecord.KEYWORDS += line[11:]
 				case "SOURCE":
 					gbRecord.SOURCE += line[11:]
 				case "ORGANISM":
-					gbRecord.ORGANISM += line[11:]
+					gbRecord.ORGANISM += "\n" + line[12:]
 				}
 			}
 		}
