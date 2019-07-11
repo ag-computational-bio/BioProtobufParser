@@ -84,7 +84,7 @@ func parseHeader(lines []string, gbRecord *Genbank) {
 	currentReference := 0
 
 	for _, line := range lines {
-		if len(line) > 12 {
+		if len(line) >= 12 {
 			switch line[0:12] {
 			case "LOCUS       ":
 				beforeCategory = "LOCUS"
@@ -128,7 +128,7 @@ func parseHeader(lines []string, gbRecord *Genbank) {
 			case "  JOURNAL   ":
 				beforeCategory = "  JOURNAL"
 				currentRef.JOURNAL = line[12:]
-			case "  PUBMED    ":
+			case "   PUBMED   ":
 				beforeCategory = "  PUBMED"
 				currentRef.PUBMED = line[12:]
 			case "COMMENT     ":
@@ -139,12 +139,12 @@ func parseHeader(lines []string, gbRecord *Genbank) {
 				case "COMMENT":
 					gbRecord.COMMENT += "\n" + line[12:]
 				case "  AUTHORS":
-					currentRef.AUTHORS += line[12:]
+					currentRef.AUTHORS += line[11:]
 				case "  TITLE":
-					currentRef.TITLE += line[12:]
+					currentRef.TITLE += line[11:]
 				case "  JOURNAL":
-					currentRef.JOURNAL += line[12:]
-				case "  PUBMED":
+					currentRef.JOURNAL += line[11:]
+				case "   PUBMED":
 					currentRef.PUBMED += line[12:]
 				case "LOCUS":
 					gbRecord.LOCUS += line[11:]
@@ -196,7 +196,11 @@ func parseQualifier(lines []string, gbRecord *Genbank) {
 					qualMap[currentType] = ""
 				}
 			} else {
-				qualMap[currentType] += line[21:]
+				if currentType != "/translation" {
+					qualMap[currentType] += line[20:]
+				} else {
+					qualMap[currentType] += line[21:]
+				}
 			}
 		case "CONTIG":
 			gbRecord.CONTIG = line[12:]

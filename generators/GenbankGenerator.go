@@ -31,7 +31,7 @@ func generateHeaderString(record *gbparse.Genbank) (HeadString string) {
 	buffer.WriteString("LOCUS       " + record.LOCUS + "\n")
 	buffer.WriteString(formatStringWithNewlineChars("DEFINITION  "+record.DEFINITION, "            ", true))
 	buffer.WriteString("ACCESSION   " + record.ACCESSION + "\n")
-	buffer.WriteString("VERSION     " + record.ACCESSION + "\n")
+	buffer.WriteString("VERSION     " + record.VERSION + "\n")
 	buffer.WriteString("DBLINK      " + addSpacesSpecialHeader(record.DBLINK) + "\n")
 	buffer.WriteString("KEYWORDS    " + record.KEYWORDS + "\n")
 	buffer.WriteString("SOURCE      " + record.SOURCE + "\n")
@@ -41,8 +41,10 @@ func generateHeaderString(record *gbparse.Genbank) (HeadString string) {
 		buffer.WriteString("REFERENCE   " + ref.ORIGIN + "\n")
 		buffer.WriteString(formatStringWithNewlineChars("  AUTHORS   "+ref.AUTHORS, "            ", true))
 		buffer.WriteString(formatStringWithNewlineChars("  TITLE     "+ref.TITLE, "            ", true))
-		buffer.WriteString("  JOURNAL   " + ref.JOURNAL + "\n")
-		buffer.WriteString("   PUBMED   " + ref.PUBMED + "\n")
+		buffer.WriteString(formatStringWithNewlineChars("  JOURNAL   "+ref.JOURNAL, "            ", true))
+		if ref.PUBMED != "" {
+			buffer.WriteString("   PUBMED   " + ref.PUBMED + "\n")
+		}
 	}
 	buffer.WriteString("COMMENT     " + addSpacesSpecialHeader(record.COMMENT) + "\n")
 
@@ -85,16 +87,17 @@ func generateSequenceString(record *gbparse.Genbank) {
 func addSpacesSpecialHeader(inputString string) (Output string) {
 	var returnbuffer bytes.Buffer
 	for _, char := range inputString {
+		returnbuffer.WriteRune(char)
 		if char == '\n' {
 			returnbuffer.WriteString("            ")
 		}
-		returnbuffer.WriteRune(char)
 	}
 	return returnbuffer.String()
 }
 
 func formatStringWithNewlineChars(Splittedstring string, newlineinsertion string, hasKeyword bool) (result string) {
 	var buffer bytes.Buffer
+	fmt.Println(Splittedstring)
 	keyword := ""
 	if hasKeyword {
 		keyword = Splittedstring[:len(newlineinsertion)]
