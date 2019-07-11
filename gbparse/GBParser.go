@@ -11,11 +11,11 @@ import (
 )
 
 type GBParser struct {
-	output chan *Genbank
+	Output chan *Genbank
 }
 
 func (gb *GBParser) Init() {
-	gb.output = make(chan *Genbank, 1000000)
+	gb.Output = make(chan *Genbank, 1000000)
 }
 
 func (gb GBParser) ReadAndParseFile(reader io.Reader, mainwg *sync.WaitGroup) {
@@ -48,9 +48,9 @@ func (gb GBParser) ReadAndParseFile(reader io.Reader, mainwg *sync.WaitGroup) {
 			hasSequence = true
 		} else if strings.HasPrefix(line, "//") {
 			if hasSequence {
-				go parseGBRecord(&lines, recordStart, featureStart, sequenceStart, currentLine, mainwg, gb.output)
+				go parseGBRecord(&lines, recordStart, featureStart, sequenceStart, currentLine, mainwg, gb.Output)
 			} else {
-				go parseGBRecord(&lines, recordStart, featureStart, currentLine, currentLine, mainwg, gb.output)
+				go parseGBRecord(&lines, recordStart, featureStart, currentLine, currentLine, mainwg, gb.Output)
 			}
 			recordStart = currentLine
 		}

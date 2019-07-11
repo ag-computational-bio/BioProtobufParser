@@ -1,12 +1,10 @@
 package main
 
 import (
-	"compress/gzip"
 	"fmt"
 	"gbparsertest2/gbparse"
 	"gbparsertest2/generators"
 	"log"
-	"net/http"
 	"os"
 	"sync"
 	"time"
@@ -14,10 +12,32 @@ import (
 
 func main() {
 	//genbank()
-	fasta()
+	//fasta()
+	genbank_read()
 }
 
-func fasta() {
+func genbank_write(parser *gbparse.GBParser) {
+	f, err := os.Create("./testdata/test.gbff")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	for record := range parser.Output {
+		_, err = f.WriteString(generators.GenerateGBfromproto(record))
+		if err != nil {
+			fmt.Println(err)
+			f.Close()
+			return
+		}
+	}
+	err = f.Close()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+}
+
+func fasta_read() {
 	var wg sync.WaitGroup
 	wg.Add(1)
 	file, err := os.Open("/home/basti/Schreibtisch/testdata/complete.1.1.genomic(1).fna")
@@ -54,28 +74,26 @@ func fastaWritefile(parser *gbparse.FASTAParser) {
 	}
 }
 
-func genbank() {
+func genbank_read() {
 	var wg sync.WaitGroup
 	start := time.Now()
 	wg.Add(1)
 	parser := gbparse.GBParser{}
 	parser.Init()
-	resp, err := http.Get("https://ftp.ncbi.nih.gov/refseq/release/complete/complete.1.genomic.gbff.gz")
-	resp.Close = true
-	handleError(err)
-	gz, err := gzip.NewReader(resp.Body)
-	handleError(err)
-	defer resp.Body.Close()
+	//resp, err := http.Get("https://ftp.ncbi.nih.gov/refseq/release/complete/complete.1.genomic.gbff.gz")
+	gz, err := os.Open("/home/basti/Schreibtisch/testdata/gbffrecords/xx00.gbff")
+	//resp.Close = true
+	if err != nil {
+		log.Fatal(err)
+	}
+	//gz, err := gzip.NewReader(resp.Body)
+	//defer resp.Body.Close()
 	defer gz.Close()
 	go parser.ReadAndParseFile(gz, &wg)
 	wg.Wait()
 	t := time.Now()
+	close(parser.Output)
+	genbank_write(&parser)
 	elapsed := t.Sub(start)
 	fmt.Println(elapsed, " seconds")
-}
-
-func handleError(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
 }

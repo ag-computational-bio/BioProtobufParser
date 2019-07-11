@@ -1,0 +1,132 @@
+{
+    "source": [
+        "/organism",
+        "/mol_type",
+        "/strain",
+        "/serotype",
+        "/serovar",
+        "/isolate",
+        "/isolation_source",
+        "/specimen_voucher",
+        "/host",
+        "/sub_species",
+        "/culture_collection",
+        "/db_xref",
+        "/tissue_type",
+        "/clone",
+        "/chromosome",
+        "/map",
+        "/lab_host",
+        "/plasmid",
+        "/country",
+        "/old_locus_tag",
+        "/lat_lon",
+        "/altitude",
+        "/collection_date",
+        "/type",
+        "/collected_by",
+        "/locus_tag",
+        "/inference",
+        "/subtype",
+        "/subgroup",
+        "/genotype",
+        "/codon_start",
+        "/transl_table",
+        "/product",
+        "/protein_id",
+        "/translation",
+        "/pathovar",
+        "/serogroup",
+        "/biotype",
+        "/identified_by",
+        "/note",
+        "/biovar"
+    ],
+    "gene": [
+        "/gene",
+        "/locus_tag",
+        "/old_locus_tag",
+        "/gene_synonym",
+        "/note",
+        "/pseudo"
+    ],
+    "CDS": [
+        "/gene",
+        "/locus_tag",
+        "/old_locus_tag",
+        "/gene_synonym",
+        "/EC_number",
+        "/inference",
+        "/exception",
+        "/note",
+        "/pseudo",
+        "/codon_start",
+        "/transl_except",
+        "/transl_table",
+        "/product",
+        "/protein_id",
+        "/translation"
+    ],
+    "tRNA": [
+        "/locus_tag",
+        "/old_locus_tag",
+        "/product",
+        "/inference",
+        "/anticodon"
+    ],
+    "ncRNA": [
+        "/ncRNA_class",
+        "/gene",
+        "/locus_tag",
+        "/old_locus_tag",
+        "/product",
+        "/inference",
+        "/note",
+        "/db_xref"
+    ],
+    "STS": [
+        "/locus_tag",
+        "/standard_name",
+        "/db_xref"
+    ],
+    "misc_feature": [
+        "/note"
+    ],
+    "rRNA": [
+        "/gene",
+        "/locus_tag",
+        "/old_locus_tag",
+        "/product",
+        "/inference",
+        "/note",
+        "/pseudo",
+        "/db_xref"
+    ],
+    "misc_binding": [
+        "/note",
+        "/bound_moiety"
+    ],
+    "repeat_region": [
+        "/inference",
+        "/rpt_family",
+        "/rpt_type",
+        "/rpt_unit_range",
+        "/rpt_unit_seq",
+        "/locus_tag"
+    ],
+    "tmRNA": [
+        "/gene",
+        "/locus_tag",
+        "/product",
+        "/inference",
+        "/note",
+        "/db_xref"
+    ],
+    "regulatory": [
+        "/regulatory_class",
+        "/inference",
+        "/note",
+        "/bound_moiety",
+        "/db_xref"
+    ]
+}
