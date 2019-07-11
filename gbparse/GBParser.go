@@ -48,11 +48,11 @@ func (gb GBParser) ReadAndParseFile(reader io.Reader, mainwg *sync.WaitGroup) {
 			hasSequence = true
 		} else if strings.HasPrefix(line, "//") {
 			if hasSequence {
-				mainwg.Add(1)
-				go parseGBRecord(&lines, recordStart, featureStart, sequenceStart, currentLine, mainwg, gb.Output)
+				//mainwg.Add(1)
+				parseGBRecord(&lines, recordStart, featureStart, sequenceStart, currentLine, mainwg, gb.Output)
 			} else {
-				mainwg.Add(1)
-				go parseGBRecord(&lines, recordStart, featureStart, currentLine, currentLine, mainwg, gb.Output)
+				//mainwg.Add(1)
+				parseGBRecord(&lines, recordStart, featureStart, currentLine, currentLine, mainwg, gb.Output)
 			}
 			recordStart = currentLine
 		}
@@ -71,7 +71,7 @@ func parseGBRecord(lines *[]string, startpoint int, startpointqual int, startpoi
 		parseSequence((*lines)[startpointseq:startpointnext], currentGenbankRecord)
 	}
 	output <- currentGenbankRecord
-	wg.Done()
+	//wg.Done()
 }
 
 func parseHeader(lines []string, gbRecord *Genbank) {
