@@ -239,7 +239,7 @@ func parseSequence(lines []string, gbRecord *Genbank) {
 
 func getPositionFormat(line string) (bool, []string) {
 	regxComp, _ := regexp.Compile("complement")
-	regxFromTo, _ := regexp.Compile("[<]?[0-9]+[>]?")
+	regxFromTo, _ := regexp.Compile("[>0-9<]+")
 	isComplement := false
 	if regxComp.MatchString(line) {
 		isComplement = true

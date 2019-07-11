@@ -97,7 +97,7 @@ func addSpacesSpecialHeader(inputString string) (Output string) {
 
 func formatStringWithNewlineChars(Splittedstring string, newlineinsertion string, hasKeyword bool) (result string) {
 	var buffer bytes.Buffer
-	fmt.Println(Splittedstring)
+	// DEBUG: fmt.Println(Splittedstring)
 	keyword := ""
 	if hasKeyword {
 		keyword = Splittedstring[:len(newlineinsertion)]
@@ -112,10 +112,10 @@ func formatStringWithNewlineChars(Splittedstring string, newlineinsertion string
 			if char == ' ' {
 				lastspaceindex = i
 			}
-			if currentlength >= 80-len(newlineinsertion)-1 {
+			if currentlength >= 79-len(newlineinsertion) {
 				buffer.WriteString(newlineinsertion + Splittedstring[lastsplitindex:lastspaceindex] + "\n")
 				lastsplitindex = lastspaceindex + 1
-				currentlength = 0
+				currentlength = i - lastspaceindex - 1
 			}
 			if i == len(Splittedstring)-1 {
 				buffer.WriteString(newlineinsertion + Splittedstring[lastsplitindex:] + "\n")
