@@ -72,7 +72,11 @@ func generateQualifierString(record *gbparse.Genbank, jsonmap map[string][]strin
 		}
 		for _, occurence := range jsonmap[feature.TYPE] {
 			if val, inMap := feature.QUALIFIERS[occurence]; inMap {
-				buffer.WriteString(formatStringWithNewlineChars(occurence+"="+val, "                     ", false))
+				if occurence == "/pseudo" {
+					buffer.WriteString("                     /pseudo\n")
+				} else {
+					buffer.WriteString(formatStringWithNewlineChars(occurence+"="+val, "                     ", false))
+				}
 			}
 		}
 
@@ -136,5 +140,9 @@ func formatStringWithNewlineChars(Splittedstring string, newlineinsertion string
 
 		}
 	}
-	return keyword + buffer.String()[len(keyword):]
+	if len(buffer.String()) > 0 {
+		return keyword + buffer.String()[len(keyword):]
+	} else {
+		return keyword + "\n"
+	}
 }

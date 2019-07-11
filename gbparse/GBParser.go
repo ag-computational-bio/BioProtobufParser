@@ -71,7 +71,6 @@ func parseGBRecord(lines *[]string, startpoint int, startpointqual int, startpoi
 		parseSequence((*lines)[startpointseq:startpointnext], currentGenbankRecord)
 	}
 	output <- currentGenbankRecord
-	fmt.Println(len(output))
 	wg.Done()
 }
 
