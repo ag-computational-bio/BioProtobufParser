@@ -121,6 +121,9 @@ func parseHeader(lines []string, gbRecord *Genbank) {
 			case "  AUTHORS   ":
 				beforeCategory = "  AUTHORS"
 				currentRef.AUTHORS = line[12:]
+			case "  CONSRTM   ":
+				beforeCategory = "  CONSRTM"
+				currentRef.CONSRTM = line[12:]
 			case "  TITLE     ":
 				beforeCategory = "  TITLE"
 				currentRef.TITLE = line[12:]
@@ -139,6 +142,8 @@ func parseHeader(lines []string, gbRecord *Genbank) {
 					gbRecord.COMMENT += "\n" + line[12:]
 				case "  AUTHORS":
 					currentRef.AUTHORS += line[11:]
+				case "  CONSRTM":
+					currentRef.CONSRTM += line[11:]
 				case "  TITLE":
 					currentRef.TITLE += line[11:]
 				case "  JOURNAL":

@@ -22,9 +22,10 @@ message Reference {
   int32 Number = 1;
   string ORIGIN = 2;
   string AUTHORS = 3;
-  string TITLE = 4;
-  string JOURNAL = 5;
-  string PUBMED = 6;
+  string CONSRTM = 4;
+  string TITLE = 5;
+  string JOURNAL = 6;
+  string PUBMED = 7;
 }
 
 message Feature {
