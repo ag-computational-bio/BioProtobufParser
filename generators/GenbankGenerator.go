@@ -2,10 +2,12 @@ package generators
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"gbparsertest2/gbparse"
 	"io/ioutil"
+	"log"
 	"os"
 	"strings"
 )
@@ -32,12 +34,22 @@ func generateHeaderString(record *gbparse.Genbank) (HeadString string) {
 	buffer.WriteString(formatStringWithNewlineChars("DEFINITION  "+record.DEFINITION, "            ", true))
 	buffer.WriteString("ACCESSION   " + record.ACCESSION + "\n")
 	buffer.WriteString("VERSION     " + record.VERSION + "\n")
-	if record.DBLINK != "" {
-		buffer.WriteString("DBLINK      " + addSpacesSpecialHeader(record.DBLINK) + "\n")
+	if len(record.DBLINK) > 0 {
+		for i, line := range record.DBLINK {
+			if i == 0 {
+				buffer.WriteString("DBLINK      " + line + "\n")
+			}
+			buffer.WriteString("            " + line + "\n")
+		}
 	}
 	buffer.WriteString("KEYWORDS    " + record.KEYWORDS + "\n")
 	buffer.WriteString("SOURCE      " + record.SOURCE + "\n")
-	buffer.WriteString("  ORGANISM  " + addSpacesSpecialHeader(record.ORGANISM) + "\n")
+	for i, line := range record.ORGANISM {
+		if i == 0 {
+			buffer.WriteString("  ORGANISM  " + line + "\n")
+		}
+		buffer.WriteString("            " + line + "\n")
+	}
 
 	for _, ref := range record.REFERENCES {
 		if ref.ORIGIN != "" {
@@ -53,7 +65,8 @@ func generateHeaderString(record *gbparse.Genbank) (HeadString string) {
 			}
 		}
 	}
-	buffer.WriteString("COMMENT     " + addSpacesSpecialHeader(record.COMMENT) + "\n")
+	b64Decode, _ := base64.StdEncoding.DecodeString(record.COMMENT)
+	buffer.WriteString("COMMENT     " + addSpacesSpecialHeader(string(b64Decode)) + "\n")
 
 	return buffer.String()
 }
@@ -64,7 +77,10 @@ func read_json() (result map[string][]string) {
 	}
 	defer jsonFile.Close()
 	byteValue, _ := ioutil.ReadAll(jsonFile)
-	json.Unmarshal([]byte(byteValue), &result)
+	err = json.Unmarshal([]byte(byteValue), &result)
+	if err != nil {
+		log.Fatal(err)
+	}
 	return result
 }
 
