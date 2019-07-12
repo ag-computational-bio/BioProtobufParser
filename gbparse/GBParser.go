@@ -192,7 +192,7 @@ func parseQualifier(lines []string, gbRecord *Genbank) {
 		switch line[0:6] {
 		case "      ":
 			if qualifier.MatchString(line[21:]) {
-				splits := strings.Split(line, "=")
+				splits := strings.SplitN(line, "=", 2)
 				currentType = splits[0][21:]
 				if len(splits) == 2 {
 					qualMap[currentType] = splits[1]
