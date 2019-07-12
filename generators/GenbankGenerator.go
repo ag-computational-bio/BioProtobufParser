@@ -32,7 +32,9 @@ func generateHeaderString(record *gbparse.Genbank) (HeadString string) {
 	buffer.WriteString(formatStringWithNewlineChars("DEFINITION  "+record.DEFINITION, "            ", true))
 	buffer.WriteString("ACCESSION   " + record.ACCESSION + "\n")
 	buffer.WriteString("VERSION     " + record.VERSION + "\n")
-	buffer.WriteString("DBLINK      " + addSpacesSpecialHeader(record.DBLINK) + "\n")
+	if record.DBLINK != "" {
+		buffer.WriteString("DBLINK      " + addSpacesSpecialHeader(record.DBLINK) + "\n")
+	}
 	buffer.WriteString("KEYWORDS    " + record.KEYWORDS + "\n")
 	buffer.WriteString("SOURCE      " + record.SOURCE + "\n")
 	buffer.WriteString("  ORGANISM  " + addSpacesSpecialHeader(record.ORGANISM) + "\n")
