@@ -38,7 +38,7 @@ func generateHeaderString(record *gbparse.Genbank) (HeadString string) {
 	buffer.WriteString("  ORGANISM  " + addSpacesSpecialHeader(record.ORGANISM) + "\n")
 
 	for _, ref := range record.REFERENCES {
-		if ref != nil {
+		if ref.ORIGIN != "" {
 			buffer.WriteString("REFERENCE   " + ref.ORIGIN + "\n")
 			buffer.WriteString(formatStringWithNewlineChars("  AUTHORS   "+ref.AUTHORS, "            ", true))
 			if ref.CONSRTM != "" {
