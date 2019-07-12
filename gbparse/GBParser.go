@@ -2,6 +2,7 @@ package gbparse
 
 import (
 	"bufio"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"log"
@@ -135,11 +136,11 @@ func parseHeader(lines []string, gbRecord *Genbank) {
 				currentRef.PUBMED = line[12:]
 			case "COMMENT     ":
 				beforeCategory = "COMMENT"
-				gbRecord.COMMENT = line[12:]
+				gbRecord.COMMENT = base64.StdEncoding.EncodeToString([]byte(line[12:]))
 			default:
 				switch beforeCategory {
 				case "COMMENT":
-					gbRecord.COMMENT += "\n" + line[12:]
+					gbRecord.COMMENT += base64.StdEncoding.EncodeToString([]byte("\n" + line[12:]))
 				case "  AUTHORS":
 					currentRef.AUTHORS += line[11:]
 				case "  CONSRTM":
