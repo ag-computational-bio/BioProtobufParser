@@ -99,7 +99,7 @@ func parseHeader(lines []string, gbRecord *Genbank) {
 				gbRecord.VERSION = line[12:]
 			case "DBLINK      ":
 				beforeCategory = "DBLINK"
-				gbRecord.DBLINK = line[12:]
+				gbRecord.DBLINK = append(gbRecord.DBLINK, line[12:])
 			case "KEYWORDS    ":
 				beforeCategory = "KEYWORDS"
 				gbRecord.KEYWORDS = line[12:]
@@ -108,7 +108,7 @@ func parseHeader(lines []string, gbRecord *Genbank) {
 				gbRecord.SOURCE = line[12:]
 			case "  ORGANISM  ":
 				beforeCategory = "ORGANISM"
-				gbRecord.ORGANISM = line[12:]
+				gbRecord.ORGANISM = append(gbRecord.ORGANISM, line[12:])
 			case "REFERENCE   ":
 				beforeCategory = "REFERENCE"
 				if currentReference >= 1 {
@@ -159,13 +159,13 @@ func parseHeader(lines []string, gbRecord *Genbank) {
 				case "VERSION":
 					gbRecord.VERSION += line[11:]
 				case "DBLINK":
-					gbRecord.DBLINK += "\n" + line[12:]
+					gbRecord.DBLINK = append(gbRecord.DBLINK, line[12:])
 				case "KEYWORDS":
 					gbRecord.KEYWORDS += line[11:]
 				case "SOURCE":
 					gbRecord.SOURCE += line[11:]
 				case "ORGANISM":
-					gbRecord.ORGANISM += "\n" + line[12:]
+					gbRecord.ORGANISM = append(gbRecord.ORGANISM, line[12:])
 				}
 			}
 		}

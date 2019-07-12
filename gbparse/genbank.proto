@@ -7,10 +7,10 @@ message Genbank {
   string ACCESSION = 2;
   string DEFINITION = 3;
   string VERSION = 4;
-  string DBLINK = 5;
+  repeated string DBLINK = 5;
   string KEYWORDS = 6;
   string SOURCE = 7;
-  string ORGANISM = 8;
+  repeated string ORGANISM = 8;
   string COMMENT = 9;
   string SEQUENCE = 10;
   string CONTIG = 11;
