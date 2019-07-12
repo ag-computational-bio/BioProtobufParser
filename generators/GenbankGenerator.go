@@ -38,12 +38,14 @@ func generateHeaderString(record *gbparse.Genbank) (HeadString string) {
 	buffer.WriteString("  ORGANISM  " + addSpacesSpecialHeader(record.ORGANISM) + "\n")
 
 	for _, ref := range record.REFERENCES {
-		buffer.WriteString("REFERENCE   " + ref.ORIGIN + "\n")
-		buffer.WriteString(formatStringWithNewlineChars("  AUTHORS   "+ref.AUTHORS, "            ", true))
-		buffer.WriteString(formatStringWithNewlineChars("  TITLE     "+ref.TITLE, "            ", true))
-		buffer.WriteString(formatStringWithNewlineChars("  JOURNAL   "+ref.JOURNAL, "            ", true))
-		if ref.PUBMED != "" {
-			buffer.WriteString("   PUBMED   " + ref.PUBMED + "\n")
+		if ref != nil {
+			buffer.WriteString("REFERENCE   " + ref.ORIGIN + "\n")
+			buffer.WriteString(formatStringWithNewlineChars("  AUTHORS   "+ref.AUTHORS, "            ", true))
+			buffer.WriteString(formatStringWithNewlineChars("  TITLE     "+ref.TITLE, "            ", true))
+			buffer.WriteString(formatStringWithNewlineChars("  JOURNAL   "+ref.JOURNAL, "            ", true))
+			if ref.PUBMED != "" {
+				buffer.WriteString("   PUBMED   " + ref.PUBMED + "\n")
+			}
 		}
 	}
 	buffer.WriteString("COMMENT     " + addSpacesSpecialHeader(record.COMMENT) + "\n")
