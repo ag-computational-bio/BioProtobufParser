@@ -41,6 +41,9 @@ func generateHeaderString(record *gbparse.Genbank) (HeadString string) {
 		if ref != nil {
 			buffer.WriteString("REFERENCE   " + ref.ORIGIN + "\n")
 			buffer.WriteString(formatStringWithNewlineChars("  AUTHORS   "+ref.AUTHORS, "            ", true))
+			if ref.CONSRTM != "" {
+				buffer.WriteString(formatStringWithNewlineChars("  CONSRTM   "+ref.CONSRTM, "            ", true))
+			}
 			buffer.WriteString(formatStringWithNewlineChars("  TITLE     "+ref.TITLE, "            ", true))
 			buffer.WriteString(formatStringWithNewlineChars("  JOURNAL   "+ref.JOURNAL, "            ", true))
 			if ref.PUBMED != "" {
