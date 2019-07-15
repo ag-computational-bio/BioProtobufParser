@@ -31,7 +31,13 @@ message Reference {
 message Feature {
   string TYPE = 1;
   bool isCompliment = 2;
-  string START = 3;
-  string STOP = 4;
-  map<string, string> QUALIFIERS = 5;
+  bool isJoined = 3;
+  string START = 4;
+  string STOP = 5;
+  repeated Qualifier QUALIFIERS = 6;
+}
+
+message Qualifier{
+  string key = 1;
+  string value = 2;
 }

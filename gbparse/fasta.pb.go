@@ -13,6 +13,7 @@ It has these top-level messages:
 	Genbank
 	Reference
 	Feature
+	Qualifier
 */
 package gbparse
 

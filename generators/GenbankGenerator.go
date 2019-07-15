@@ -3,12 +3,7 @@ package generators
 import (
 	"bytes"
 	"encoding/base64"
-	"encoding/json"
-	"fmt"
 	"gbparsertest2/gbparse"
-	"io/ioutil"
-	"log"
-	"os"
 	"strings"
 )
 
@@ -17,7 +12,7 @@ func GenerateGBfromproto(record *gbparse.Genbank) (fastarecord string) {
 
 	stringbuffer.WriteString(generateHeaderString(record))
 	stringbuffer.WriteString("FEATURES             Location/Qualifiers\n")
-	stringbuffer.WriteString(generateQualifierString(record, read_json()))
+	stringbuffer.WriteString(generateQualifierString(record))
 	if record.FEATURES != nil {
 
 	}
@@ -44,7 +39,7 @@ func generateHeaderString(record *gbparse.Genbank) (HeadString string) {
 		}
 	}
 	buffer.WriteString("KEYWORDS    " + record.KEYWORDS + "\n")
-	buffer.WriteString("SOURCE      " + record.SOURCE + "\n")
+	buffer.WriteString(formatStringWithNewlineChars("SOURCE      "+record.SOURCE, "            ", true))
 	for i, line := range record.ORGANISM {
 		if i == 0 {
 			buffer.WriteString("  ORGANISM  " + line + "\n")
@@ -72,21 +67,8 @@ func generateHeaderString(record *gbparse.Genbank) (HeadString string) {
 
 	return buffer.String()
 }
-func read_json() (result map[string][]string) {
-	jsonFile, err := os.Open("generators/categorys_by_occurence.json")
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer jsonFile.Close()
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-	err = json.Unmarshal([]byte(byteValue), &result)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return result
-}
 
-func generateQualifierString(record *gbparse.Genbank, jsonmap map[string][]string) (QualString string) {
+func generateQualifierString(record *gbparse.Genbank) (returnstring string) {
 	var buffer bytes.Buffer
 	spacestring := "                "
 	for _, feature := range record.FEATURES {
@@ -95,13 +77,11 @@ func generateQualifierString(record *gbparse.Genbank, jsonmap map[string][]strin
 		} else {
 			buffer.WriteString("     " + feature.TYPE + spacestring[len(feature.TYPE):] + feature.START + ".." + feature.STOP + "\n")
 		}
-		for _, occurence := range jsonmap[feature.TYPE] {
-			if val, inMap := feature.QUALIFIERS[occurence]; inMap {
-				if occurence == "/pseudo" {
-					buffer.WriteString("                     /pseudo\n")
-				} else {
-					buffer.WriteString(formatStringWithNewlineChars(occurence+"="+val, "                     ", false))
-				}
+		for _, qualifier := range feature.QUALIFIERS {
+			if qualifier.Key == "/pseudo" {
+				buffer.WriteString("                     /pseudo\n")
+			} else {
+				buffer.WriteString(formatStringWithNewlineChars(qualifier.Key+"="+qualifier.Value, "                     ", false))
 			}
 		}
 

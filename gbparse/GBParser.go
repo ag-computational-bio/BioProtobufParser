@@ -73,6 +73,7 @@ func parseGBRecord(lines *[]string, startpoint int, startpointqual int, startpoi
 	}
 	//Encode Comment to b64 before it is written to output-channel
 	currentGenbankRecord.COMMENT = base64.RawStdEncoding.EncodeToString([]byte(currentGenbankRecord.COMMENT))
+	printRecord(currentGenbankRecord)
 	output <- currentGenbankRecord
 	//wg.Done()
 }
@@ -183,30 +184,36 @@ func parseQualifier(lines []string, gbRecord *Genbank) {
 
 	currentFeature := &Feature{}
 	var FeatureList []*Feature
-	qualMap := make(map[string]string)
+	var QualList []*Qualifier
+
+	currentQual := Qualifier{}
 
 	wordRegEx, _ := regexp.Compile("[^\\s]+")
 	qualifier, _ := regexp.Compile("^[/].*[=]?")
 
-	initialized := false
 	currentType := ""
+
+	initialized := false
 	for _, line := range lines {
 
 		switch line[0:6] {
 		case "      ":
 			if qualifier.MatchString(line[21:]) {
 				splits := strings.SplitN(line, "=", 2)
-				currentType = splits[0][21:]
+				if (currentQual.Key) != "" {
+					QualList = append(QualList, &currentQual)
+				}
+				currentQual.Key = splits[0][21:]
 				if len(splits) == 2 {
-					qualMap[currentType] = splits[1]
+					currentQual.Value = splits[1]
 				} else if len(splits) == 1 {
-					qualMap[currentType] = ""
+					currentQual.Value = ""
 				}
 			} else {
-				if currentType != "/translation" {
-					qualMap[currentType] += line[20:]
+				if currentQual.Key != "/translation" {
+					currentQual.Value += line[20:]
 				} else {
-					qualMap[currentType] += line[21:]
+					currentQual.Value += line[21:]
 				}
 			}
 		case "CONTIG":
@@ -215,10 +222,10 @@ func parseQualifier(lines []string, gbRecord *Genbank) {
 			currentType = wordRegEx.FindString(line[0:21])
 			if currentType != "FEATURES" {
 				if initialized {
-					currentFeature.QUALIFIERS = qualMap
+					currentFeature.QUALIFIERS = QualList
 					FeatureList = append(FeatureList, currentFeature)
 					currentFeature = &Feature{}
-					qualMap = make(map[string]string)
+					QualList = []*Qualifier{}
 				}
 				currentFeature.TYPE = currentType
 				x, y := getPositionFormat(line[21:])
@@ -229,7 +236,8 @@ func parseQualifier(lines []string, gbRecord *Genbank) {
 			}
 		}
 	}
-	currentFeature.QUALIFIERS = qualMap
+	QualList = append(QualList, &currentQual)
+	currentFeature.QUALIFIERS = QualList
 	FeatureList = append(FeatureList, currentFeature)
 	gbRecord.FEATURES = FeatureList
 }
@@ -274,8 +282,8 @@ func printRecord(gbRecord *Genbank) {
 
 	for _, y := range gbRecord.FEATURES {
 		fmt.Println(y.TYPE, y.IsCompliment, y.START, y.STOP)
-		for k, v := range y.QUALIFIERS {
-			fmt.Println(k + "=" + v)
+		for _, v := range y.QUALIFIERS {
+			fmt.Println(v.Key + "=" + v.Value)
 		}
 	}
 
