@@ -38,8 +38,9 @@ func generateHeaderString(record *gbparse.Genbank) (HeadString string) {
 		for i, line := range record.DBLINK {
 			if i == 0 {
 				buffer.WriteString("DBLINK      " + line + "\n")
+			} else {
+				buffer.WriteString("            " + line + "\n")
 			}
-			buffer.WriteString("            " + line + "\n")
 		}
 	}
 	buffer.WriteString("KEYWORDS    " + record.KEYWORDS + "\n")
@@ -47,8 +48,9 @@ func generateHeaderString(record *gbparse.Genbank) (HeadString string) {
 	for i, line := range record.ORGANISM {
 		if i == 0 {
 			buffer.WriteString("  ORGANISM  " + line + "\n")
+		} else {
+			buffer.WriteString("            " + line + "\n")
 		}
-		buffer.WriteString("            " + line + "\n")
 	}
 
 	for _, ref := range record.REFERENCES {
@@ -65,7 +67,7 @@ func generateHeaderString(record *gbparse.Genbank) (HeadString string) {
 			}
 		}
 	}
-	b64Decode, _ := base64.StdEncoding.DecodeString(record.COMMENT)
+	b64Decode, _ := base64.RawStdEncoding.DecodeString(record.COMMENT)
 	buffer.WriteString("COMMENT     " + addSpacesSpecialHeader(string(b64Decode)) + "\n")
 
 	return buffer.String()

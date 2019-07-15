@@ -71,6 +71,8 @@ func parseGBRecord(lines *[]string, startpoint int, startpointqual int, startpoi
 	if startpointseq != startpointnext {
 		parseSequence((*lines)[startpointseq:startpointnext], currentGenbankRecord)
 	}
+	//Encode Comment to b64 before it is written to output-channel
+	currentGenbankRecord.COMMENT = base64.RawStdEncoding.EncodeToString([]byte(currentGenbankRecord.COMMENT))
 	output <- currentGenbankRecord
 	//wg.Done()
 }
@@ -136,11 +138,11 @@ func parseHeader(lines []string, gbRecord *Genbank) {
 				currentRef.PUBMED = line[12:]
 			case "COMMENT     ":
 				beforeCategory = "COMMENT"
-				gbRecord.COMMENT = base64.StdEncoding.EncodeToString([]byte(line[12:]))
+				gbRecord.COMMENT = line[12:]
 			default:
 				switch beforeCategory {
 				case "COMMENT":
-					gbRecord.COMMENT += base64.StdEncoding.EncodeToString([]byte("\n" + line[12:]))
+					gbRecord.COMMENT += "\n" + line[12:]
 				case "  AUTHORS":
 					currentRef.AUTHORS += line[11:]
 				case "  CONSRTM":
