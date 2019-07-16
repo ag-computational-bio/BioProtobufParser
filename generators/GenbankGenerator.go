@@ -73,9 +73,18 @@ func generateQualifierString(record *gbparse.Genbank) (returnstring string) {
 	spacestring := "                "
 	for _, feature := range record.FEATURES {
 		if feature.IsCompliment {
-			buffer.WriteString("     " + feature.TYPE + spacestring[len(feature.TYPE):] + "complement(" + feature.START + ".." + feature.STOP + ")\n")
+			if feature.IsJoined {
+				buffer.WriteString("     " + feature.TYPE + spacestring[len(feature.TYPE):] + "complement(join(" + feature.START + "," + feature.STOP + ")\n")
+			} else {
+				buffer.WriteString("     " + feature.TYPE + spacestring[len(feature.TYPE):] + "complement(" + feature.START + ".." + feature.STOP + ")\n")
+			}
+
 		} else {
-			buffer.WriteString("     " + feature.TYPE + spacestring[len(feature.TYPE):] + feature.START + ".." + feature.STOP + "\n")
+			if feature.IsJoined {
+				buffer.WriteString("     " + feature.TYPE + spacestring[len(feature.TYPE):] + "join(" + feature.START + "," + feature.STOP + ")\n")
+			} else {
+				buffer.WriteString("     " + feature.TYPE + spacestring[len(feature.TYPE):] + feature.START + ".." + feature.STOP + "\n")
+			}
 		}
 		for _, qualifier := range feature.QUALIFIERS {
 			if qualifier.Key == "/pseudo" {
