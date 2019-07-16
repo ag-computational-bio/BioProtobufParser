@@ -73,7 +73,7 @@ func parseGBRecord(lines *[]string, startpoint int, startpointqual int, startpoi
 	}
 	//Encode Comment to b64 before it is written to output-channel
 	currentGenbankRecord.COMMENT = base64.RawStdEncoding.EncodeToString([]byte(currentGenbankRecord.COMMENT))
-	printRecord(currentGenbankRecord)
+	//printRecord(currentGenbankRecord)
 	output <- currentGenbankRecord
 	//wg.Done()
 }
@@ -186,7 +186,7 @@ func parseQualifier(lines []string, gbRecord *Genbank) {
 	var FeatureList []*Feature
 	var QualList []*Qualifier
 
-	currentQual := Qualifier{}
+	currentQual := &Qualifier{}
 
 	wordRegEx, _ := regexp.Compile("[^\\s]+")
 	qualifier, _ := regexp.Compile("^[/].*[=]?")
@@ -201,7 +201,8 @@ func parseQualifier(lines []string, gbRecord *Genbank) {
 			if qualifier.MatchString(line[21:]) {
 				splits := strings.SplitN(line, "=", 2)
 				if (currentQual.Key) != "" {
-					QualList = append(QualList, &currentQual)
+					QualList = append(QualList, currentQual)
+					currentQual = &Qualifier{}
 				}
 				currentQual.Key = splits[0][21:]
 				if len(splits) == 2 {
@@ -222,6 +223,8 @@ func parseQualifier(lines []string, gbRecord *Genbank) {
 			currentType = wordRegEx.FindString(line[0:21])
 			if currentType != "FEATURES" {
 				if initialized {
+					QualList = append(QualList, currentQual)
+					currentQual = &Qualifier{}
 					currentFeature.QUALIFIERS = QualList
 					FeatureList = append(FeatureList, currentFeature)
 					currentFeature = &Feature{}
@@ -236,7 +239,8 @@ func parseQualifier(lines []string, gbRecord *Genbank) {
 			}
 		}
 	}
-	QualList = append(QualList, &currentQual)
+	QualList = append(QualList, currentQual)
+	currentQual = &Qualifier{}
 	currentFeature.QUALIFIERS = QualList
 	FeatureList = append(FeatureList, currentFeature)
 	gbRecord.FEATURES = FeatureList
