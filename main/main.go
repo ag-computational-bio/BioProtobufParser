@@ -81,7 +81,7 @@ func genbank_read() {
 	parser := gbparse.GBParser{}
 	parser.Init()
 	//resp, err := http.Get("https://ftp.ncbi.nih.gov/refseq/release/complete/complete.1.genomic.gbff.gz")
-	gz, err := os.Open("/home/basti/Schreibtisch/testdata/gbffrecords/xx00.gbff")
+	gz, err := os.Open("/home/basti/Schreibtisch/testdata/gbffrecords/complete.1.genomic.gbff(1)")
 	//resp.Close = true
 	if err != nil {
 		log.Fatal(err)

@@ -80,7 +80,7 @@ func generateQualifierString(record *gbparse.Genbank) (returnstring string) {
 		for _, qualifier := range feature.QUALIFIERS {
 			if qualifier.Key == "/pseudo" {
 				buffer.WriteString("                     /pseudo\n")
-			} else {
+			} else if qualifier.Key != "" {
 				buffer.WriteString(formatStringWithNewlineChars(qualifier.Key+"="+qualifier.Value, "                     ", false))
 			}
 		}
