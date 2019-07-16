@@ -231,10 +231,16 @@ func parseQualifier(lines []string, gbRecord *Genbank) {
 					QualList = []*Qualifier{}
 				}
 				currentFeature.TYPE = currentType
-				x, y := getPositionFormat(line[21:])
-				currentFeature.IsCompliment = x
-				currentFeature.START = y[0]
-				currentFeature.STOP = y[1]
+				compliment, isjoined, fromto := getPositionFormat(line[21:])
+				currentFeature.IsCompliment = compliment
+				currentFeature.IsJoined = isjoined
+				if isjoined {
+					currentFeature.START = fromto[0] + ".." + fromto[1]
+					currentFeature.STOP = fromto[2] + ".." + fromto[3]
+				} else {
+					currentFeature.START = fromto[0]
+					currentFeature.STOP = fromto[1]
+				}
 				initialized = true
 			}
 		}
@@ -256,14 +262,19 @@ func parseSequence(lines []string, gbRecord *Genbank) {
 	gbRecord.SEQUENCE = sequence
 }
 
-func getPositionFormat(line string) (bool, []string) {
+func getPositionFormat(line string) (isComplement bool, isJoined bool, strings []string) {
 	regxComp, _ := regexp.Compile("complement")
+	regxJoin, _ := regexp.Compile("join")
 	regxFromTo, _ := regexp.Compile("[>0-9<]+")
-	isComplement := false
+	isComplement = false
+	isJoined = false
 	if regxComp.MatchString(line) {
 		isComplement = true
 	}
-	return isComplement, regxFromTo.FindAllString(line, -1)
+	if regxJoin.MatchString(line) {
+		isJoined = true
+	}
+	return isComplement, isJoined, regxFromTo.FindAllString(line, -1)
 }
 
 func printRecord(gbRecord *Genbank) {
