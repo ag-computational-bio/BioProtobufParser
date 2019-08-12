@@ -97,7 +97,7 @@ func parseHeader(lines []string, gbRecord *Genbank) {
 				gbRecord.DEFINITION = line[12:]
 			case "ACCESSION   ":
 				beforeCategory = "ACCESSION"
-				gbRecord.ACCESSION = line[12:]
+				gbRecord.ACCESSION = findAccesions(line[12:])
 			case "VERSION     ":
 				beforeCategory = "VERSION"
 				gbRecord.VERSION = line[12:]
@@ -159,7 +159,7 @@ func parseHeader(lines []string, gbRecord *Genbank) {
 				case "DEFINITION":
 					gbRecord.DEFINITION += line[11:]
 				case "ACCESSION":
-					gbRecord.ACCESSION += line[11:]
+					gbRecord.ACCESSION = append(gbRecord.ACCESSION, findAccesions(line[11:])...)
 				case "VERSION":
 					gbRecord.VERSION += line[11:]
 				case "DBLINK":
@@ -178,6 +178,11 @@ func parseHeader(lines []string, gbRecord *Genbank) {
 	RefList = append(RefList, currentRef)
 
 	gbRecord.REFERENCES = RefList
+}
+
+func findAccesions(line string) (accessions []string) {
+	accregex, _ := regexp.Compile("[A-Z0-9_]+")
+	return accregex.FindAllString(line, -1)
 }
 
 func parseQualifier(lines []string, gbRecord *Genbank) {

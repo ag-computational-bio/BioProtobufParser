@@ -4,7 +4,7 @@ package gbparse;
 
 message Genbank {
   string LOCUS = 1;
-  string ACCESSION = 2;
+  repeated string ACCESSION = 2;
   string DEFINITION = 3;
   string VERSION = 4;
   repeated string DBLINK = 5;
