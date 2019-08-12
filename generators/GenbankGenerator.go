@@ -28,7 +28,7 @@ func generateHeaderString(record *gbparse.Genbank) (HeadString string) {
 	buffer.WriteString("LOCUS       " + record.LOCUS + "\n")
 	buffer.WriteString(formatStringWithNewlineChars("DEFINITION  "+record.DEFINITION, "            ", true))
 	if len(record.ACCESSION) > 1 {
-		buffer.WriteString("ACCESSION   " + strings.Join(record.ACCESSION[:], " ") + "\n")
+		buffer.WriteString(formatStringWithNewlineChars("ACCESSION   "+strings.Join(record.ACCESSION[:], " "), "            ", true))
 	} else {
 		buffer.WriteString("ACCESSION   " + record.ACCESSION[0] + "\n")
 	}
