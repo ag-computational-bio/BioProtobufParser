@@ -3,11 +3,14 @@ package generators
 import (
 	"bytes"
 	"encoding/base64"
-	"gbparsertest2/gbparse"
 	"strings"
+
+	"git.computational.bio.uni-giessen.de/sbeyvers/golanggbffparser/gbparse"
 )
 
-func GenerateGBfromproto(record *gbparse.Genbank) (fastarecord string) {
+//GenerateGBfromproto Genbank protobuf to genbank file
+//Generates a genbank file from a given protobuf genbank
+func GenerateGBfromproto(record *gbparse.Genbank) string {
 	var stringbuffer bytes.Buffer
 
 	stringbuffer.WriteString(generateHeaderString(record))
@@ -160,7 +163,7 @@ func formatStringWithNewlineChars(Splittedstring string, newlineinsertion string
 	}
 	if len(buffer.String()) > 0 {
 		return keyword + buffer.String()[len(keyword):]
-	} else {
-		return keyword + "\n"
 	}
+
+	return keyword + "\n"
 }

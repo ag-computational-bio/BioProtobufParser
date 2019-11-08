@@ -2,10 +2,12 @@ package generators
 
 import (
 	"bytes"
-	"gbparsertest2/gbparse"
+
+	"git.computational.bio.uni-giessen.de/sbeyvers/golanggbffparser/gbparse"
 )
 
-func GenerateFastafromproto(record *gbparse.Fasta) (fastarecord string) {
+//GenerateFastafromproto Fasta protobuf to fasta
+func GenerateFastafromproto(record *gbparse.Fasta) string {
 	return record.HEADER + "\n" + insertNth(record.SEQUENCE, 80) + "\n"
 }
 
