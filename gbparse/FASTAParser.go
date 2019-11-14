@@ -43,8 +43,7 @@ func (fastaparser FASTAParser) ReadAndParseFile(reader io.Reader, mainwg *sync.W
 		}
 	}
 	// Letztes Record parsen
-	mainwg.Add(1)
-	go parseFastaRecord(header, sequence, mainwg, fastaparser.Output)
+	parseFastaRecord(header, sequence, mainwg, fastaparser.Output)
 	// Waitgroup -> Done
 	mainwg.Done()
 }
