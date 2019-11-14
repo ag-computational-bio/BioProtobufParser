@@ -7,6 +7,7 @@ import (
 )
 
 //GenerateFastafromproto Fasta protobuf to fasta
+
 func GenerateFastafromproto(record *gbparse.Fasta) string {
 	return record.HEADER + "\n" + insertNth(record.SEQUENCE, 80) + "\n"
 }

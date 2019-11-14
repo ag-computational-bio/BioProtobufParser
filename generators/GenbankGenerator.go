@@ -3,9 +3,8 @@ package generators
 import (
 	"bytes"
 	"encoding/base64"
-	"strings"
-
 	"git.computational.bio.uni-giessen.de/sbeyvers/golanggbffparser/gbparse"
+	"strings"
 )
 
 //GenerateGBfromproto Genbank protobuf to genbank file

@@ -34,8 +34,7 @@ func (fastaparser FASTAParser) ReadAndParseFile(reader io.Reader, mainwg *sync.W
 		line := scanner.Text()
 		if strings.HasPrefix(line, ">") {
 			if header != "" {
-				mainwg.Add(1)
-				go parseFastaRecord(header, sequence, mainwg, fastaparser.Output)
+				parseFastaRecord(header, sequence, mainwg, fastaparser.Output)
 			}
 			header = line
 			sequence = ""
