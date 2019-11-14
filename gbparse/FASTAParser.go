@@ -34,7 +34,7 @@ func (fastaparser FASTAParser) ReadAndParseFile(reader io.Reader, mainwg *sync.W
 		line := scanner.Text()
 		if strings.HasPrefix(line, ">") {
 			if header != "" {
-				parseFastaRecord(header, sequence, mainwg, fastaparser.Output)
+				parseFastaRecord(header, sequence, fastaparser.Output)
 			}
 			header = line
 			sequence = ""
@@ -43,12 +43,12 @@ func (fastaparser FASTAParser) ReadAndParseFile(reader io.Reader, mainwg *sync.W
 		}
 	}
 	// Letztes Record parsen
-	parseFastaRecord(header, sequence, mainwg, fastaparser.Output)
+	parseFastaRecord(header, sequence, fastaparser.Output)
 	// Waitgroup -> Done
 	mainwg.Done()
 }
 
-func parseFastaRecord(header string, sequence string, wg *sync.WaitGroup, output chan *Fasta) {
+func parseFastaRecord(header string, sequence string, output chan *Fasta) {
 	currentFastaRecord := &Fasta{}
 	regxaccession, _ := regexp.Compile("[A-Z]{2}_[A-Z0-9]+")
 	regxaccessionVersion, _ := regexp.Compile("[A-Z]{2}_[A-Z0-9]+[.]?[0-9]+")
@@ -57,5 +57,4 @@ func parseFastaRecord(header string, sequence string, wg *sync.WaitGroup, output
 	currentFastaRecord.SEQUENCE = sequence
 	currentFastaRecord.HEADER = header
 	output <- currentFastaRecord
-	wg.Done()
 }
