@@ -3,7 +3,7 @@ package generators
 import (
 	"bytes"
 
-	"git.computational.bio.uni-giessen.de/sbeyvers/golanggbffparser/gbparse"
+	"git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/gocompiled"
 )
 
 //GenerateFastafromproto Fasta protobuf to fasta

@@ -3,7 +3,7 @@ package generators
 import (
 	"bytes"
 	"encoding/base64"
-	"git.computational.bio.uni-giessen.de/sbeyvers/golanggbffparser/gbparse"
+	"git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/gocompiled"
 	"strings"
 )
 
