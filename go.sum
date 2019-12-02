@@ -1,2 +1,6 @@
+git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles v0.0.0-20191202152649-06356f70b53e h1:jcFFbDOOEaho7WuAxCv5ziXKfghHgEokLyhQXYA9nR8=
+git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles v0.0.0-20191202152649-06356f70b53e/go.mod h1:RZE/OhRkVmkubj9GX9JzTfhEqT8GafY+MDfxzymnNTA=
+git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go v0.1.0 h1:gQ8BoJP2rTFIFmIesfhBehw82zdUzrOrGGPYr08w2HM=
+git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go v0.1.0/go.mod h1:sGAdMSqka05soCmdwicxXfEwV5ssgBq80Ti8MpVh/+0=
 github.com/golang/protobuf v1.3.2 h1:6nsPYzhq5kReh6QImI3k5qWzO4PEbvbIW2cwSfR/6xs=
 github.com/golang/protobuf v1.3.2/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=

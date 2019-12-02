@@ -2,7 +2,7 @@ package gbparse
 
 import (
 	"bufio"
-	"git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/gocompiled"
+	"git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go"
 	"io"
 	"log"
 	"regexp"

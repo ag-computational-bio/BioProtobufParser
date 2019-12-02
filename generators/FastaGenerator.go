@@ -1,9 +1,9 @@
 package generators
 
 import (
+	"git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go"
 	"bytes"
 
-	"git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/gocompiled"
 )
 
 //GenerateFastafromproto Fasta protobuf to fasta

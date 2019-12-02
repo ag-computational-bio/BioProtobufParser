@@ -1,9 +1,9 @@
 package generators
 
 import (
+	"git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go"
 	"bytes"
 	"encoding/base64"
-	"git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/gocompiled"
 	"strings"
 )
 

@@ -4,12 +4,13 @@ import (
 	"bufio"
 	"encoding/base64"
 	"fmt"
-	"git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/gocompiled"
 	"io"
 	"log"
 	"regexp"
 	"strings"
 	"sync"
+
+	gbparse "git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go"
 )
 
 type GBParser struct {
