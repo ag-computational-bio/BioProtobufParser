@@ -241,7 +241,10 @@ func parseQualifier(lines []string, gbRecord *gbparse.Genbank) {
 				compliment, isjoined, fromto := getPositionFormat(line[21:])
 				currentFeature.IsCompliment = compliment
 				currentFeature.IsJoined = isjoined
-				if isjoined {
+				if len(fromto) == 1 {
+					currentFeature.START = fromto[0]
+					currentFeature.STOP = fromto[0]
+				} else if isjoined {
 					currentFeature.START = fromto[0] + ".." + fromto[1]
 					currentFeature.STOP = fromto[2] + ".." + fromto[3]
 				} else {

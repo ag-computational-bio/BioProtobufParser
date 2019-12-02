@@ -2,12 +2,13 @@ package gbparse
 
 import (
 	"bufio"
-	"git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go"
 	"io"
 	"log"
 	"regexp"
 	"strings"
 	"sync"
+
+	gbparse "git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go"
 )
 
 type FASTAParser struct {
