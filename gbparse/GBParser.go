@@ -10,15 +10,15 @@ import (
 	"strings"
 	"sync"
 
-	gbparse "git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go"
+	bioproto "git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go"
 )
 
 type GBParser struct {
-	Output chan *gbparse.Genbank
+	Output chan *bioproto.Genbank
 }
 
 func (gb *GBParser) Init() {
-	gb.Output = make(chan *gbparse.Genbank, 1000000)
+	gb.Output = make(chan *bioproto.Genbank, 1000000)
 }
 
 func (gb GBParser) ReadAndParseFile(reader io.Reader, mainwg *sync.WaitGroup) {
@@ -65,9 +65,9 @@ func (gb GBParser) ReadAndParseFile(reader io.Reader, mainwg *sync.WaitGroup) {
 	mainwg.Done()
 }
 
-func parseGBRecord(lines *[]string, startpoint int, startpointqual int, startpointseq int, startpointnext int, wg *sync.WaitGroup, output chan *gbparse.Genbank) {
+func parseGBRecord(lines *[]string, startpoint int, startpointqual int, startpointseq int, startpointnext int, wg *sync.WaitGroup, output chan *bioproto.Genbank) {
 	// DEBUG: fmt.Println(startpoint, startpointqual, startpointseq, startpointnext)
-	currentGenbankRecord := &gbparse.Genbank{}
+	currentGenbankRecord := &bioproto.Genbank{}
 	parseHeader((*lines)[startpoint:startpointqual], currentGenbankRecord)
 	parseQualifier((*lines)[startpointqual:startpointseq], currentGenbankRecord)
 	if startpointseq != startpointnext {
@@ -80,10 +80,10 @@ func parseGBRecord(lines *[]string, startpoint int, startpointqual int, startpoi
 	//wg.Done()
 }
 
-func parseHeader(lines []string, gbRecord *gbparse.Genbank) {
+func parseHeader(lines []string, gbRecord *bioproto.Genbank) {
 
-	currentRef := &gbparse.Reference{}
-	var RefList []*gbparse.Reference
+	currentRef := &bioproto.Reference{}
+	var RefList []*bioproto.Reference
 
 	beforeCategory := ""
 	currentReference := 0
@@ -120,7 +120,7 @@ func parseHeader(lines []string, gbRecord *gbparse.Genbank) {
 				if currentReference >= 1 {
 					RefList = append(RefList, currentRef)
 				}
-				currentRef = &gbparse.Reference{}
+				currentRef = &bioproto.Reference{}
 				currentRef.ORIGIN = line[12:]
 				currentReference++
 				currentRef.Number = int32(currentReference)
@@ -187,13 +187,13 @@ func findAccesions(line string) (accessions []string) {
 	return accregex.FindAllString(line, -1)
 }
 
-func parseQualifier(lines []string, gbRecord *gbparse.Genbank) {
+func parseQualifier(lines []string, gbRecord *bioproto.Genbank) {
 
-	currentFeature := &gbparse.Feature{}
-	var FeatureList []*gbparse.Feature
-	var QualList []*gbparse.Qualifier
+	currentFeature := &bioproto.Feature{}
+	var FeatureList []*bioproto.Feature
+	var QualList []*bioproto.Qualifier
 
-	currentQual := &gbparse.Qualifier{}
+	currentQual := &bioproto.Qualifier{}
 
 	wordRegEx, _ := regexp.Compile("[^\\s]+")
 	qualifier, _ := regexp.Compile("^[/].*[=]?")
@@ -209,7 +209,7 @@ func parseQualifier(lines []string, gbRecord *gbparse.Genbank) {
 				splits := strings.SplitN(line, "=", 2)
 				if (currentQual.Key) != "" {
 					QualList = append(QualList, currentQual)
-					currentQual = &gbparse.Qualifier{}
+					currentQual = &bioproto.Qualifier{}
 				}
 				currentQual.Key = splits[0][21:]
 				if len(splits) == 2 {
@@ -231,11 +231,11 @@ func parseQualifier(lines []string, gbRecord *gbparse.Genbank) {
 			if currentType != "FEATURES" {
 				if initialized {
 					QualList = append(QualList, currentQual)
-					currentQual = &gbparse.Qualifier{}
+					currentQual = &bioproto.Qualifier{}
 					currentFeature.QUALIFIERS = QualList
 					FeatureList = append(FeatureList, currentFeature)
-					currentFeature = &gbparse.Feature{}
-					QualList = []*gbparse.Qualifier{}
+					currentFeature = &bioproto.Feature{}
+					QualList = []*bioproto.Qualifier{}
 				}
 				currentFeature.TYPE = currentType
 				compliment, isjoined, fromto := getPositionFormat(line[21:])
@@ -256,13 +256,13 @@ func parseQualifier(lines []string, gbRecord *gbparse.Genbank) {
 		}
 	}
 	QualList = append(QualList, currentQual)
-	currentQual = &gbparse.Qualifier{}
+	currentQual = &bioproto.Qualifier{}
 	currentFeature.QUALIFIERS = QualList
 	FeatureList = append(FeatureList, currentFeature)
 	gbRecord.FEATURES = FeatureList
 }
 
-func parseSequence(lines []string, gbRecord *gbparse.Genbank) {
+func parseSequence(lines []string, gbRecord *bioproto.Genbank) {
 
 	seqRegEx, _ := regexp.Compile("[a-zA-Z]+")
 	sequence := ""
@@ -287,7 +287,7 @@ func getPositionFormat(line string) (isComplement bool, isJoined bool, strings [
 	return isComplement, isJoined, regxFromTo.FindAllString(line, -1)
 }
 
-func printRecord(gbRecord *gbparse.Genbank) {
+func printRecord(gbRecord *bioproto.Genbank) {
 	fmt.Println(gbRecord.LOCUS)
 	fmt.Println(gbRecord.ACCESSION)
 	fmt.Println(gbRecord.DEFINITION)

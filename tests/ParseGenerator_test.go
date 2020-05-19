@@ -1,13 +1,14 @@
 package tests
 
 import (
-	"git.computational.bio.uni-giessen.de/sbeyvers/golanggbffparser/gbparse"
-	"git.computational.bio.uni-giessen.de/sbeyvers/golanggbffparser/generators"
 	"io/ioutil"
 	"log"
 	"os"
 	"sync"
 	"testing"
+
+	"git.computational.bio.uni-giessen.de/sbeyvers/golanggbffparser/gbparse"
+	"git.computational.bio.uni-giessen.de/sbeyvers/golanggbffparser/generators"
 )
 
 func TestGBFFParserAndGenerator(t *testing.T) {

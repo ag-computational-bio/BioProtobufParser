@@ -1,14 +1,14 @@
 package generators
 
 import (
-	"git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go"
 	"bytes"
 
+	bioproto "git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go"
 )
 
 //GenerateFastafromproto Fasta protobuf to fasta
 
-func GenerateFastafromproto(record *gbparse.Fasta) string {
+func GenerateFastafromproto(record *bioproto.Fasta) string {
 	return record.HEADER + "\n" + insertNth(record.SEQUENCE, 80) + "\n"
 }
 

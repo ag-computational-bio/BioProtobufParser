@@ -1,15 +1,16 @@
 package generators
 
 import (
-	"git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go"
 	"bytes"
 	"encoding/base64"
 	"strings"
+
+	bioproto "git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go"
 )
 
 //GenerateGBfromproto Genbank protobuf to genbank file
 //Generates a genbank file from a given protobuf genbank
-func GenerateGBfromproto(record *gbparse.Genbank) string {
+func GenerateGBfromproto(record *bioproto.Genbank) string {
 	var stringbuffer bytes.Buffer
 
 	stringbuffer.WriteString(generateHeaderString(record))
@@ -25,7 +26,7 @@ func GenerateGBfromproto(record *gbparse.Genbank) string {
 	return stringbuffer.String()
 }
 
-func generateHeaderString(record *gbparse.Genbank) (HeadString string) {
+func generateHeaderString(record *bioproto.Genbank) (HeadString string) {
 	var buffer bytes.Buffer
 	buffer.WriteString("LOCUS       " + record.LOCUS + "\n")
 	buffer.WriteString(formatStringWithNewlineChars("DEFINITION  "+record.DEFINITION, "            ", true))
@@ -74,7 +75,7 @@ func generateHeaderString(record *gbparse.Genbank) (HeadString string) {
 	return buffer.String()
 }
 
-func generateQualifierString(record *gbparse.Genbank) (returnstring string) {
+func generateQualifierString(record *bioproto.Genbank) (returnstring string) {
 	var buffer bytes.Buffer
 	spacestring := "                "
 	for _, feature := range record.FEATURES {
@@ -104,7 +105,7 @@ func generateQualifierString(record *gbparse.Genbank) (returnstring string) {
 	return buffer.String()
 }
 
-func generateSequenceString(record *gbparse.Genbank) {
+func generateSequenceString(record *bioproto.Genbank) {
 
 }
 
