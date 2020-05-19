@@ -1,4 +1,4 @@
-module git.computational.bio.uni-giessen.de/sbeyvers/golanggbffparser/go
+module git.computational.bio.uni-giessen.de/sbeyvers/golanggbffparser
 
 go 1.14
 
