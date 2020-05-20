@@ -9,18 +9,13 @@ import (
 
 	"git.computational.bio.uni-giessen.de/sbeyvers/golanggbffparser/gbparse"
 	"git.computational.bio.uni-giessen.de/sbeyvers/golanggbffparser/generators"
+	bioproto "git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go"
 )
 
 func TestGBFFParserAndGenerator(t *testing.T) {
 
 	// Add Waitgroup
 	var wg sync.WaitGroup
-	wg.Add(1)
-
-	// Initialize Parser
-	parser := gbparse.GBParser{}
-	parser.Init()
-
 	// Open testfile
 	gbff, err := os.Open("../testfiles/Test50Entries.gbff")
 	// Read file as bytebuffer for comparison
@@ -30,16 +25,25 @@ func TestGBFFParserAndGenerator(t *testing.T) {
 		log.Fatal(err)
 	}
 
+	output := make(chan *bioproto.Genbank, 1000000)
+
 	log.Println("Parsing gbff file...")
 	defer gbff.Close()
-	go parser.ReadAndParseFile(gbff, &wg)
+
+	parser := gbparse.GBParser{}
+
+	wg.Add(1)
+	go func() {
+		parser.ReadAndParseFile(gbff, output)
+		wg.Done()
+	}()
 	wg.Wait()
 
 	log.Println("Parsing complete, reading protobuf...")
 	result := ""
 	// Close Output channel before reading
-	close(parser.Output)
-	for record := range parser.Output {
+	close(output)
+	for record := range output {
 		result += generators.GenerateGBfromproto(record)
 	}
 
@@ -53,14 +57,11 @@ func TestFASTAParserAndGenerator(t *testing.T) {
 
 	// Add Waitgroup
 	var wg sync.WaitGroup
-	wg.Add(1)
 
 	// Initialize Parser
-	parser := gbparse.FASTAParser{}
-	parser.Init()
 
 	// Open testfile
-	gbff, err := os.Open("../testfiles/Test50Entries.fasta")
+	fasta, err := os.Open("../testfiles/Test50Entries.fasta")
 	// Read file as bytebuffer for comparison
 	filecontent, err := ioutil.ReadFile("../testfiles/Test50Entries.fasta")
 
@@ -68,16 +69,26 @@ func TestFASTAParserAndGenerator(t *testing.T) {
 		log.Fatal(err)
 	}
 
+	parser := gbparse.FASTAParser{}
+
 	log.Println("Parsing fasta file...")
-	defer gbff.Close()
-	go parser.ReadAndParseFile(gbff, &wg)
+	defer fasta.Close()
+
+	output := make(chan *bioproto.Fasta, 1000000)
+
+	wg.Add(1)
+	go func() {
+		parser.ReadAndParseFile(fasta, output)
+		wg.Done()
+	}()
 	wg.Wait()
 
 	log.Println("Parsing complete, reading protobuf...")
 	result := ""
+
 	// Close Output channel before reading
-	close(parser.Output)
-	for record := range parser.Output {
+	close(output)
+	for record := range output {
 		result += generators.GenerateFastafromproto(record)
 	}
 

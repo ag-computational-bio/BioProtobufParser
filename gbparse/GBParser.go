@@ -8,20 +8,14 @@ import (
 	"log"
 	"regexp"
 	"strings"
-	"sync"
 
 	bioproto "git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go"
 )
 
 type GBParser struct {
-	Output chan *bioproto.Genbank
 }
 
-func (gb *GBParser) Init() {
-	gb.Output = make(chan *bioproto.Genbank, 1000000)
-}
-
-func (gb GBParser) ReadAndParseFile(reader io.Reader, mainwg *sync.WaitGroup) {
+func (parser *GBParser) ReadAndParseFile(reader io.Reader, output chan *bioproto.Genbank) {
 
 	scanner := bufio.NewScanner(reader)
 
@@ -52,20 +46,18 @@ func (gb GBParser) ReadAndParseFile(reader io.Reader, mainwg *sync.WaitGroup) {
 		} else if strings.HasPrefix(line, "//") {
 			if hasSequence {
 				//mainwg.Add(1)
-				parseGBRecord(&lines, recordStart, featureStart, sequenceStart, currentLine, mainwg, gb.Output)
+				parseGBRecord(&lines, recordStart, featureStart, sequenceStart, currentLine, output)
 			} else {
 				//mainwg.Add(1)
-				parseGBRecord(&lines, recordStart, featureStart, currentLine, currentLine, mainwg, gb.Output)
+				parseGBRecord(&lines, recordStart, featureStart, currentLine, currentLine, output)
 			}
 			recordStart = currentLine
 		}
 		currentLine++
 	}
-	// Waitgroup -> Done
-	mainwg.Done()
 }
 
-func parseGBRecord(lines *[]string, startpoint int, startpointqual int, startpointseq int, startpointnext int, wg *sync.WaitGroup, output chan *bioproto.Genbank) {
+func parseGBRecord(lines *[]string, startpoint int, startpointqual int, startpointseq int, startpointnext int, output chan *bioproto.Genbank) {
 	// DEBUG: fmt.Println(startpoint, startpointqual, startpointseq, startpointnext)
 	currentGenbankRecord := &bioproto.Genbank{}
 	parseHeader((*lines)[startpoint:startpointqual], currentGenbankRecord)

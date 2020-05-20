@@ -6,20 +6,14 @@ import (
 	"log"
 	"regexp"
 	"strings"
-	"sync"
 
 	gbparse "git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go"
 )
 
 type FASTAParser struct {
-	Output chan *gbparse.Fasta
 }
 
-func (fastaparser *FASTAParser) Init() {
-	fastaparser.Output = make(chan *gbparse.Fasta, 10000000)
-}
-
-func (fastaparser FASTAParser) ReadAndParseFile(reader io.Reader, mainwg *sync.WaitGroup) {
+func (fastaparser FASTAParser) ReadAndParseFile(reader io.Reader, output chan *gbparse.Fasta) {
 
 	scanner := bufio.NewScanner(reader)
 	header := ""
@@ -36,7 +30,7 @@ func (fastaparser FASTAParser) ReadAndParseFile(reader io.Reader, mainwg *sync.W
 		line := scanner.Text()
 		if strings.HasPrefix(line, ">") {
 			if header != "" {
-				parseFastaRecord(header, sequence, fastaparser.Output)
+				parseFastaRecord(header, sequence, output)
 			}
 			header = line
 			sequence = ""
@@ -45,9 +39,8 @@ func (fastaparser FASTAParser) ReadAndParseFile(reader io.Reader, mainwg *sync.W
 		}
 	}
 	// Letztes Record parsen
-	parseFastaRecord(header, sequence, fastaparser.Output)
+	parseFastaRecord(header, sequence, output)
 	// Waitgroup -> Done
-	mainwg.Done()
 }
 
 func parseFastaRecord(header string, sequence string, output chan *gbparse.Fasta) {
