@@ -7,13 +7,13 @@ import (
 	"regexp"
 	"strings"
 
-	gbparse "github.com/ag-computational-bio/BioProtobufSchemas/go"
+	bioproto "github.com/ag-computational-bio/BioProtobufSchemas/go"
 )
 
 type FASTAParser struct {
 }
 
-func (fastaparser FASTAParser) ReadAndParseFile(reader io.Reader, output chan *gbparse.Fasta) {
+func (fastaparser FASTAParser) ReadAndParseFile(reader io.Reader, output chan *bioproto.Fasta) {
 
 	scanner := bufio.NewScanner(reader)
 	header := ""
@@ -43,8 +43,8 @@ func (fastaparser FASTAParser) ReadAndParseFile(reader io.Reader, output chan *g
 	// Waitgroup -> Done
 }
 
-func parseFastaRecord(header string, sequence string, output chan *gbparse.Fasta) {
-	currentFastaRecord := &gbparse.Fasta{}
+func parseFastaRecord(header string, sequence string, output chan *bioproto.Fasta) {
+	currentFastaRecord := &bioproto.Fasta{}
 	regxaccession, _ := regexp.Compile("[A-Z]{2}_[A-Z0-9]+")
 	regxaccessionVersion, _ := regexp.Compile("[A-Z]{2}_[A-Z0-9]+[.]?[0-9]+")
 	currentFastaRecord.ACCESSION = regxaccession.FindAllString(header, -1)[0]
