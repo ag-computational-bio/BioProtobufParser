@@ -3,7 +3,7 @@ package generators
 import (
 	"bytes"
 
-	bioproto "git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go"
+	bioproto "github.com/ag-computational-bio/BioProtobufSchemas/go"
 )
 
 //GenerateFastafromproto Fasta protobuf to fasta

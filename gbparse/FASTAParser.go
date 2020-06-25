@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	gbparse "git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go"
+	gbparse "github.com/ag-computational-bio/BioProtobufSchemas/go"
 )
 
 type FASTAParser struct {

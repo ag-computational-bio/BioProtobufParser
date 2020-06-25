@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 	"strings"
 
-	bioproto "git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go"
+	bioproto "github.com/ag-computational-bio/BioProtobufSchemas/go"
 )
 
 //GenerateGBfromproto Genbank protobuf to genbank file

@@ -1,8 +1,8 @@
-module git.computational.bio.uni-giessen.de/sbeyvers/golanggbffparser
+module github.com/ag-computational-bio/BioProtobufParser
 
 go 1.14
 
 require (
-	git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go v0.2.0-alpha-4
+	github.com/ag-computational-bio/BioProtobufSchemas/go v0.0.0-20200625101520-793ec6927001
 	google.golang.org/protobuf v1.23.0 // indirect
 )

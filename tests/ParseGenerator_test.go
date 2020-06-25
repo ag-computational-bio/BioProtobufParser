@@ -7,9 +7,9 @@ import (
 	"sync"
 	"testing"
 
-	"git.computational.bio.uni-giessen.de/sbeyvers/golanggbffparser/gbparse"
-	"git.computational.bio.uni-giessen.de/sbeyvers/golanggbffparser/generators"
-	bioproto "git.computational.bio.uni-giessen.de/sbeyvers/protobuffiles/go"
+	"github.com/ag-computational-bio/BioProtobufParser/gbparse"
+	"github.com/ag-computational-bio/BioProtobufParser/generators"
+	bioproto "github.com/ag-computational-bio/BioProtobufSchemas/go"
 )
 
 func TestGBFFParserAndGenerator(t *testing.T) {
