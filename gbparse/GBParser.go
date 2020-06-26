@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"regexp"
+	"strconv"
 	"strings"
 
 	bioproto "github.com/ag-computational-bio/BioProtobufSchemas/go"
@@ -230,19 +231,13 @@ func parseQualifier(lines []string, gbRecord *bioproto.Genbank) {
 					QualList = []*bioproto.Qualifier{}
 				}
 				currentFeature.TYPE = currentType
-				compliment, isjoined, fromto := getPositionFormat(line[21:])
-				currentFeature.IsCompliment = compliment
-				currentFeature.IsJoined = isjoined
-				if len(fromto) == 1 {
-					currentFeature.START = fromto[0]
-					currentFeature.STOP = fromto[0]
-				} else if isjoined {
-					currentFeature.START = fromto[0] + ".." + fromto[1]
-					currentFeature.STOP = fromto[2] + ".." + fromto[3]
-				} else {
-					currentFeature.START = fromto[0]
-					currentFeature.STOP = fromto[1]
-				}
+				isComplement, isJoined, isOrdered, minPos, maxPos, locations := parseAllLocations(line[21:])
+				currentFeature.IsCompliment = isComplement
+				currentFeature.IsJoined = isJoined
+				currentFeature.IsOrdered = isOrdered
+				currentFeature.MINPOSITION = minPos
+				currentFeature.MAXPOSITION = maxPos
+				currentFeature.LOCATIONS = locations
 				initialized = true
 			}
 		}
@@ -264,19 +259,76 @@ func parseSequence(lines []string, gbRecord *bioproto.Genbank) {
 	gbRecord.SEQUENCE = sequence
 }
 
-func getPositionFormat(line string) (isComplement bool, isJoined bool, strings []string) {
+func parseSingleLocation(line string) (loc *bioproto.Location) {
+	var startpos, stoppos int
+
+	hasexternal := strings.ContainsRune(line, ':')
+
+	// Regexes
+	positions, _ := regexp.Compile("[0-9]+")
+	unknownsingleregx, _ := regexp.Compile("[>0-9<]+\\.[>0-9<]+")
+
+	newLocation := bioproto.Location{}
+
+	if hasexternal {
+		idsplit := strings.Split(line, ":")
+		newLocation.EXTERNALREFERENCE = idsplit[0]
+		line = idsplit[1]
+	}
+
+	newLocation.SITEBETWEEN = strings.ContainsRune(line, '^')
+	newLocation.UNKNOWNLB = strings.ContainsRune(line, '<')
+	newLocation.UNKNOWNUB = strings.ContainsRune(line, '>')
+	newLocation.UNKNOWNSINGLESITE = unknownsingleregx.MatchString(line)
+
+	locStrings := positions.FindAllString(line, -1)
+
+	if len(locStrings) == 1 {
+		startpos, _ = strconv.Atoi(locStrings[0])
+		stoppos = startpos
+	} else if len(locStrings) == 2 {
+		startpos, _ = strconv.Atoi(locStrings[0])
+		stoppos, _ = strconv.Atoi(locStrings[1])
+	} else {
+		panic("regex for position finding failed, 0 or more than 2 results detected: abort")
+	}
+
+	newLocation.START = int64(startpos)
+	newLocation.STOP = int64(stoppos)
+
+	return &newLocation
+}
+
+func parseAllLocations(line string) (isComplement, isJoined, order bool, maxloc, minloc int64, locations []*bioproto.Location) {
 	regxComp, _ := regexp.Compile("complement")
 	regxJoin, _ := regexp.Compile("join")
-	regxFromTo, _ := regexp.Compile("[>0-9<]+")
+	regxOrder, _ := regexp.Compile("order")
+	ismulti := strings.ContainsRune(line, ',')
+
+	if ismulti {
+		multiEntrys := strings.Split(line, ",")
+		for _, entry := range multiEntrys {
+			locations = append(locations, parseSingleLocation(entry))
+		}
+	} else {
+		locations = append(locations, parseSingleLocation(line))
+	}
+
 	isComplement = false
 	isJoined = false
+	order = false
 	if regxComp.MatchString(line) {
 		isComplement = true
 	}
 	if regxJoin.MatchString(line) {
 		isJoined = true
 	}
-	return isComplement, isJoined, regxFromTo.FindAllString(line, -1)
+
+	if regxOrder.MatchString(line) {
+		order = true
+	}
+
+	return isComplement, isJoined, order, locations[0].START, locations[len(locations)-1].STOP, locations
 }
 
 func printRecord(gbRecord *bioproto.Genbank) {
@@ -298,7 +350,7 @@ func printRecord(gbRecord *bioproto.Genbank) {
 	}
 
 	for _, y := range gbRecord.FEATURES {
-		fmt.Println(y.TYPE, y.IsCompliment, y.START, y.STOP)
+		fmt.Println(y.TYPE, y.IsCompliment, y.MINPOSITION, y.MAXPOSITION)
 		for _, v := range y.QUALIFIERS {
 			fmt.Println(v.Key + "=" + v.Value)
 		}

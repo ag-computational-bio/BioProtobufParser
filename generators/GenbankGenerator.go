@@ -3,6 +3,7 @@ package generators
 import (
 	"bytes"
 	"encoding/base64"
+	"strconv"
 	"strings"
 
 	bioproto "github.com/ag-computational-bio/BioProtobufSchemas/go"
@@ -75,24 +76,76 @@ func generateHeaderString(record *bioproto.Genbank) (HeadString string) {
 	return buffer.String()
 }
 
+func generateLocationString(feature *bioproto.Feature) (line string) {
+	spacestring := "                "
+	if feature.IsCompliment {
+		if feature.IsJoined {
+			line = "     " + feature.TYPE + spacestring[len(feature.TYPE):] + "complement(join("
+		} else if feature.IsOrdered {
+			line = "     " + feature.TYPE + spacestring[len(feature.TYPE):] + "complement(order("
+		} else {
+			line = "     " + feature.TYPE + spacestring[len(feature.TYPE):] + "complement("
+		}
+
+	} else {
+		if feature.IsJoined {
+			line = "     " + feature.TYPE + spacestring[len(feature.TYPE):] + "join("
+		} else if feature.IsOrdered {
+			line = "     " + feature.TYPE + spacestring[len(feature.TYPE):] + "order("
+		} else {
+			line = "     " + feature.TYPE + spacestring[len(feature.TYPE):]
+		}
+	}
+
+	for index, loc := range feature.LOCATIONS {
+		var firstPos, secPos string
+		if loc.UNKNOWNLB {
+			firstPos = "<" + strconv.Itoa(int(loc.START))
+		} else {
+			secPos = strconv.Itoa(int(loc.START))
+		}
+		if loc.UNKNOWNUB {
+			firstPos = ">" + strconv.Itoa(int(loc.STOP))
+		} else {
+			secPos = strconv.Itoa(int(loc.STOP))
+		}
+		if loc.EXTERNALREFERENCE != "" {
+			line += loc.EXTERNALREFERENCE + ":"
+		}
+		if loc.SITEBETWEEN {
+			line += firstPos + "^" + secPos
+		} else if loc.UNKNOWNSINGLESITE {
+			line += firstPos + "." + secPos
+		} else {
+			line += firstPos + ".." + secPos
+		}
+
+		if index != len(feature.LOCATIONS)-1 {
+			line += ","
+		}
+	}
+
+	if feature.IsCompliment {
+		line += ")"
+		if feature.IsOrdered || feature.IsJoined {
+			line += ")"
+		}
+	} else {
+		if feature.IsOrdered || feature.IsJoined {
+			line += ")"
+		}
+	}
+
+	line += "\n"
+
+	return line
+
+}
+
 func generateQualifierString(record *bioproto.Genbank) (returnstring string) {
 	var buffer bytes.Buffer
-	spacestring := "                "
 	for _, feature := range record.FEATURES {
-		if feature.IsCompliment {
-			if feature.IsJoined {
-				buffer.WriteString("     " + feature.TYPE + spacestring[len(feature.TYPE):] + "complement(join(" + feature.START + "," + feature.STOP + ")\n")
-			} else {
-				buffer.WriteString("     " + feature.TYPE + spacestring[len(feature.TYPE):] + "complement(" + feature.START + ".." + feature.STOP + ")\n")
-			}
-
-		} else {
-			if feature.IsJoined {
-				buffer.WriteString("     " + feature.TYPE + spacestring[len(feature.TYPE):] + "join(" + feature.START + "," + feature.STOP + ")\n")
-			} else {
-				buffer.WriteString("     " + feature.TYPE + spacestring[len(feature.TYPE):] + feature.START + ".." + feature.STOP + "\n")
-			}
-		}
+		buffer.WriteString(generateLocationString(feature))
 		for _, qualifier := range feature.QUALIFIERS {
 			if qualifier.Key == "/pseudo" {
 				buffer.WriteString("                     /pseudo\n")
