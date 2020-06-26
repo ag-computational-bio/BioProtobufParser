@@ -102,10 +102,10 @@ func generateLocationString(feature *bioproto.Feature) (line string) {
 		if loc.UNKNOWNLB {
 			firstPos = "<" + strconv.Itoa(int(loc.START))
 		} else {
-			secPos = strconv.Itoa(int(loc.START))
+			firstPos = strconv.Itoa(int(loc.START))
 		}
 		if loc.UNKNOWNUB {
-			firstPos = ">" + strconv.Itoa(int(loc.STOP))
+			secPos = ">" + strconv.Itoa(int(loc.STOP))
 		} else {
 			secPos = strconv.Itoa(int(loc.STOP))
 		}

@@ -47,6 +47,12 @@ func TestGBFFParserAndGenerator(t *testing.T) {
 		result += generators.GenerateGBfromproto(record)
 	}
 
+	// DEBUG: Writefile
+	//err = ioutil.WriteFile("demoresult.txt", []byte(result), 777)
+	//if err != nil{
+	//	fmt.Println(err.Error())
+	//}
+
 	// compare resultstring from protobuf object against raw string from file
 	if result != string(filecontent) {
 		t.Errorf("Parsed and generated file not equal!")
