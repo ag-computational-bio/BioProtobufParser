@@ -293,7 +293,6 @@ func parseSingleLocation(line string) (loc *bioproto.Location) {
 		fmt.Println(line)
 		panic("regex for position finding failed, 0 or more than 2 results detected: abort")
 	}
-
 	newLocation.START = int64(startpos)
 	newLocation.STOP = int64(stoppos)
 
