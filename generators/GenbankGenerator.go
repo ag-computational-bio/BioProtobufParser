@@ -68,6 +68,10 @@ func generateHeaderString(record *bioproto.Genbank) (HeadString string) {
 			if ref.PUBMED != "" {
 				buffer.WriteString("   PUBMED   " + ref.PUBMED + "\n")
 			}
+
+			if ref.REMARK != "" {
+				buffer.WriteString(formatStringWithNewlineChars("  REMARK    "+ref.REMARK, "            ", true))
+			}
 		}
 	}
 	b64Decode, _ := base64.RawStdEncoding.DecodeString(record.COMMENT)
@@ -76,7 +80,8 @@ func generateHeaderString(record *bioproto.Genbank) (HeadString string) {
 	return buffer.String()
 }
 
-func generateLocationString(feature *bioproto.Feature) (line string) {
+func generateLocationStrings(feature *bioproto.Feature) (lines []string) {
+	line := ""
 	spacestring := "                "
 	if feature.IsCompliment {
 		if feature.IsJoined {
@@ -98,7 +103,7 @@ func generateLocationString(feature *bioproto.Feature) (line string) {
 	}
 
 	for index, loc := range feature.LOCATIONS {
-		var firstPos, secPos string
+		var firstPos, secPos, posString string
 		if loc.UNKNOWNLB {
 			firstPos = "<" + strconv.Itoa(int(loc.START))
 		} else {
@@ -110,18 +115,24 @@ func generateLocationString(feature *bioproto.Feature) (line string) {
 			secPos = strconv.Itoa(int(loc.STOP))
 		}
 		if loc.EXTERNALREFERENCE != "" {
-			line += loc.EXTERNALREFERENCE + ":"
+			posString += loc.EXTERNALREFERENCE + ":"
 		}
 		if loc.SITEBETWEEN {
-			line += firstPos + "^" + secPos
+			posString += firstPos + "^" + secPos
 		} else if loc.UNKNOWNSINGLESITE {
-			line += firstPos + "." + secPos
+			posString += firstPos + "." + secPos
 		} else {
-			line += firstPos + ".." + secPos
+			posString += firstPos + ".." + secPos
 		}
 
 		if index != len(feature.LOCATIONS)-1 {
-			line += ","
+			posString += ","
+		}
+		if len(line)+len(posString) >= 79 {
+			lines = append(lines, line+"\n")
+			line = "                     " + posString
+		} else {
+			line += posString
 		}
 	}
 
@@ -136,16 +147,18 @@ func generateLocationString(feature *bioproto.Feature) (line string) {
 		}
 	}
 
-	line += "\n"
+	lines = append(lines, line+"\n")
 
-	return line
+	return lines
 
 }
 
 func generateQualifierString(record *bioproto.Genbank) (returnstring string) {
 	var buffer bytes.Buffer
 	for _, feature := range record.FEATURES {
-		buffer.WriteString(generateLocationString(feature))
+		for _, locstr := range generateLocationStrings(feature) {
+			buffer.WriteString(locstr)
+		}
 		for _, qualifier := range feature.QUALIFIERS {
 			if qualifier.Key == "/pseudo" {
 				buffer.WriteString("                     /pseudo\n")

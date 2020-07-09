@@ -2,6 +2,10 @@ cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMT
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/ag-computational-bio/BioProtobufSchemas/go v0.2.1-alpha-1 h1:hQB+UF4PTJH/WkdQSr8NrWTDiFCEBlCg5qh12AxItHM=
 github.com/ag-computational-bio/BioProtobufSchemas/go v0.2.1-alpha-1/go.mod h1:kdmIPKHaRhW4jNEoXN4KIJzLbF6Ma8P0wUAv39st32w=
+github.com/ag-computational-bio/BioProtobufSchemas/go v0.2.1-alpha-2 h1:Y0aWAbYnE+Y/CkOxBPZxevYN5rUBiLeePNG4WHdXG+4=
+github.com/ag-computational-bio/BioProtobufSchemas/go v0.2.1-alpha-2/go.mod h1:kdmIPKHaRhW4jNEoXN4KIJzLbF6Ma8P0wUAv39st32w=
+github.com/ag-computational-bio/BioProtobufSchemas/go v0.2.1-alpha-3 h1:IuS3Q400KzG6O2scZL/p0sX8ZW54YCLQFKDcs7do5v8=
+github.com/ag-computational-bio/BioProtobufSchemas/go v0.2.1-alpha-3/go.mod h1:kdmIPKHaRhW4jNEoXN4KIJzLbF6Ma8P0wUAv39st32w=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=

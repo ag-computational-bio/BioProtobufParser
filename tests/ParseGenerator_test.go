@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 	"sync"
 	"testing"
 
@@ -54,8 +55,16 @@ func TestGBFFParserAndGenerator(t *testing.T) {
 	//}
 
 	// compare resultstring from protobuf object against raw string from file
-	if result != string(filecontent) {
-		t.Errorf("Parsed and generated file not equal!")
+	origlines := strings.Split(string(filecontent), "\n")
+	genlines := strings.Split(result, "\n")
+
+	for index, lin := range genlines {
+		if lin != origlines[index] {
+			t.Errorf("Parsed and generated file not equal in line: %v", index)
+			t.Errorf(lin)
+			t.Errorf(origlines[index])
+			break
+		}
 	}
 }
 

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -26,6 +27,15 @@ func (parser *GBParser) ReadAndParseFile(reader io.Reader, output chan *bioproto
 	featureStart := 0
 	sequenceStart := 0
 	hasSequence := false
+
+	defer func() {
+		if err := recover(); err != nil {
+			log.Println("panic occurred on line:", currentLine)
+			log.Println([]byte(lines[currentLine]))
+			log.Println("error:", err)
+			os.Exit(2)
+		}
+	}()
 
 	// Iterate over Lines
 	for scanner.Scan() {
@@ -132,6 +142,9 @@ func parseHeader(lines []string, gbRecord *bioproto.Genbank) {
 			case "   PUBMED   ":
 				beforeCategory = "  PUBMED"
 				currentRef.PUBMED = line[12:]
+			case "  REMARK    ":
+				beforeCategory = "  REMARK"
+				currentRef.REMARK = line[12:]
 			case "COMMENT     ":
 				beforeCategory = "COMMENT"
 				gbRecord.COMMENT = line[12:]
@@ -194,7 +207,15 @@ func parseQualifier(lines []string, gbRecord *bioproto.Genbank) {
 	currentType := ""
 
 	initialized := false
-	for _, line := range lines {
+
+	skipLines := 0
+	locOffset := 0
+	for index, line := range lines {
+
+		if skipLines > 0 {
+			skipLines--
+			continue
+		}
 
 		switch line[0:6] {
 		case "      ":
@@ -221,6 +242,15 @@ func parseQualifier(lines []string, gbRecord *bioproto.Genbank) {
 			gbRecord.CONTIG = line[12:]
 		default:
 			currentType = wordRegEx.FindString(line[0:21])
+			for {
+				locOffset++
+				if strings.ContainsRune(lines[index+locOffset], '/') {
+					break
+				} else {
+					line += lines[index+locOffset]
+				}
+			}
+			locOffset = 0
 			if currentType != "FEATURES" {
 				if initialized {
 					QualList = append(QualList, currentQual)
@@ -290,6 +320,7 @@ func parseSingleLocation(line string) (loc *bioproto.Location) {
 		startpos, _ = strconv.Atoi(locStrings[0])
 		stoppos, _ = strconv.Atoi(locStrings[1])
 	} else {
+		fmt.Println("Error occured in location parsing:")
 		fmt.Println(line)
 		panic("regex for position finding failed, 0 or more than 2 results detected: abort")
 	}
