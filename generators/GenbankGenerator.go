@@ -158,10 +158,6 @@ func generateQualifierString(record *bioproto.Genbank) (returnstring string) {
 	return buffer.String()
 }
 
-func generateSequenceString(record *bioproto.Genbank) {
-
-}
-
 func addSpacesSpecialHeader(inputString string) (Output string) {
 	var returnbuffer bytes.Buffer
 	for _, char := range inputString {
