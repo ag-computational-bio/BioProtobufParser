@@ -290,6 +290,7 @@ func parseSingleLocation(line string) (loc *bioproto.Location) {
 		startpos, _ = strconv.Atoi(locStrings[0])
 		stoppos, _ = strconv.Atoi(locStrings[1])
 	} else {
+		fmt.Println(line)
 		panic("regex for position finding failed, 0 or more than 2 results detected: abort")
 	}
 
