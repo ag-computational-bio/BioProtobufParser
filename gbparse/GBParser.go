@@ -285,6 +285,11 @@ func parseQualifier(lines []string, gbRecord *bioproto.Genbank) {
 			currentType = wordRegEx.FindString(line[0:21])
 			for {
 				locOffset++
+				if index+locOffset >= len(lines) {
+					err := fmt.Errorf("error in parsing location: index: %v, offset: %v, currentline: %v", index, locOffset, line)
+					fmt.Println(err.Error())
+					break
+				}
 				if strings.ContainsRune(lines[index+locOffset], '/') {
 					break
 				} else {

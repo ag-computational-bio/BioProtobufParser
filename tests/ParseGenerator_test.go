@@ -18,7 +18,7 @@ func TestGBFFParserAndGenerator(t *testing.T) {
 	// Add Waitgroup
 	var wg sync.WaitGroup
 	// Open testfile
-	gbff, err := os.Open("../testfiles/Test50Entries.gbff")
+	gbff, err := os.Open("../testfiles/archaea.6.genomic.gbff")
 	// Read file as bytebuffer for comparison
 	//filecontent, err := ioutil.ReadFile("../testfiles/archaea.1.genomic.gbff")
 
