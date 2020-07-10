@@ -264,6 +264,10 @@ func parseQualifier(lines []string, gbRecord *bioproto.Genbank) {
 				if strings.ContainsRune(lines[index+locOffset], '/') {
 					break
 				} else {
+					nextLineType := wordRegEx.FindString(lines[index+locOffset][0:21])
+					if nextLineType != "" {
+						break
+					}
 					line += lines[index+locOffset]
 				}
 			}
