@@ -67,29 +67,24 @@ func (parser *GBParser) ReadAndParseFile(reader io.Reader, output chan *bioproto
 			sequenceStart = currentLine
 			hasSequence = true
 		} else if strings.HasPrefix(line, "//") {
+			var parseStats ParseStats
 			if hasSequence {
-				parseStats := ParseStats{
+				parseStats = ParseStats{
 					RecordStart:   recordStart,
 					FeatureStart:  featureStart,
 					SequenceStart: sequenceStart,
 					CurrentLine:   currentLine,
 				}
 
-				parserWG.Go(func() error {
-					return parseGBRecord(lines, parseStats, output)
-				})
 			} else {
-				parseStats := ParseStats{
+				parseStats = ParseStats{
 					RecordStart:   recordStart,
 					FeatureStart:  featureStart,
 					SequenceStart: currentLine,
 					CurrentLine:   currentLine,
 				}
-
-				parserWG.Go(func() error {
-					return parseGBRecord(lines, parseStats, output)
-				})
 			}
+			parseGBRecordWrapper(lines, parseStats, output, &parserWG)
 			recordStart = currentLine
 		}
 		currentLine++
@@ -100,6 +95,14 @@ func (parser *GBParser) ReadAndParseFile(reader io.Reader, output chan *bioproto
 		log.Println(err.Error())
 		return err
 	}
+
+	return nil
+}
+
+func parseGBRecordWrapper(lines []string, parseStats ParseStats, output chan *bioproto.Genbank, errGrp *errgroup.Group) error {
+	errGrp.Go(func() error {
+		return parseGBRecord(lines, parseStats, output)
+	})
 
 	return nil
 }
