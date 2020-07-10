@@ -19,6 +19,13 @@ type GBParser struct {
 	DebugInfo interface{}
 }
 
+type ParseStats struct {
+	RecordStart   int
+	FeatureStart  int
+	SequenceStart int
+	CurrentLine   int
+}
+
 func (parser *GBParser) ReadAndParseFile(reader io.Reader, output chan *bioproto.Genbank) error {
 
 	scanner := bufio.NewScanner(reader)
@@ -61,12 +68,26 @@ func (parser *GBParser) ReadAndParseFile(reader io.Reader, output chan *bioproto
 			hasSequence = true
 		} else if strings.HasPrefix(line, "//") {
 			if hasSequence {
+				parseStats := ParseStats{
+					RecordStart:   recordStart,
+					FeatureStart:  featureStart,
+					SequenceStart: sequenceStart,
+					CurrentLine:   currentLine,
+				}
+
 				parserWG.Go(func() error {
-					return parseGBRecord(&lines, recordStart, featureStart, sequenceStart, currentLine, output)
+					return parseGBRecord(lines, parseStats, output)
 				})
 			} else {
+				parseStats := ParseStats{
+					RecordStart:   recordStart,
+					FeatureStart:  featureStart,
+					SequenceStart: currentLine,
+					CurrentLine:   currentLine,
+				}
+
 				parserWG.Go(func() error {
-					return parseGBRecord(&lines, recordStart, featureStart, currentLine, currentLine, output)
+					return parseGBRecord(lines, parseStats, output)
 				})
 			}
 			recordStart = currentLine
@@ -83,13 +104,13 @@ func (parser *GBParser) ReadAndParseFile(reader io.Reader, output chan *bioproto
 	return nil
 }
 
-func parseGBRecord(lines *[]string, startpoint int, startpointqual int, startpointseq int, startpointnext int, output chan *bioproto.Genbank) error {
+func parseGBRecord(lines []string, parseStats ParseStats, output chan *bioproto.Genbank) error {
 	// DEBUG: fmt.Println(startpoint, startpointqual, startpointseq, startpointnext)
 	currentGenbankRecord := &bioproto.Genbank{}
-	parseHeader((*lines)[startpoint:startpointqual], currentGenbankRecord)
-	parseQualifier((*lines)[startpointqual:startpointseq], currentGenbankRecord)
-	if startpointseq != startpointnext {
-		parseSequence((*lines)[startpointseq:startpointnext], currentGenbankRecord)
+	parseHeader((lines)[parseStats.RecordStart:parseStats.FeatureStart], currentGenbankRecord)
+	parseQualifier((lines)[parseStats.FeatureStart:parseStats.SequenceStart], currentGenbankRecord)
+	if parseStats.SequenceStart != parseStats.CurrentLine {
+		parseSequence((lines)[parseStats.SequenceStart:parseStats.CurrentLine], currentGenbankRecord)
 	}
 	//Encode Comment to b64 before it is written to output-channel
 	currentGenbankRecord.COMMENT = base64.RawStdEncoding.EncodeToString([]byte(currentGenbankRecord.COMMENT))
