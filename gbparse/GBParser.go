@@ -12,12 +12,14 @@ import (
 	"strings"
 
 	bioproto "github.com/ag-computational-bio/BioProtobufSchemas/go"
+	"golang.org/x/sync/errgroup"
 )
 
 type GBParser struct {
+	DebugInfo interface{}
 }
 
-func (parser *GBParser) ReadAndParseFile(reader io.Reader, output chan *bioproto.Genbank) {
+func (parser *GBParser) ReadAndParseFile(reader io.Reader, output chan *bioproto.Genbank) error {
 
 	scanner := bufio.NewScanner(reader)
 
@@ -33,9 +35,12 @@ func (parser *GBParser) ReadAndParseFile(reader io.Reader, output chan *bioproto
 			log.Println("panic occurred on line:", currentLine)
 			log.Println([]byte(lines[currentLine]))
 			log.Println("error:", err)
+			log.Println(parser.DebugInfo)
 			os.Exit(2)
 		}
 	}()
+
+	parserWG := errgroup.Group{}
 
 	// Iterate over Lines
 	for scanner.Scan() {
@@ -56,19 +61,29 @@ func (parser *GBParser) ReadAndParseFile(reader io.Reader, output chan *bioproto
 			hasSequence = true
 		} else if strings.HasPrefix(line, "//") {
 			if hasSequence {
-				//mainwg.Add(1)
-				parseGBRecord(&lines, recordStart, featureStart, sequenceStart, currentLine, output)
+				parserWG.Go(func() error {
+					return parseGBRecord(&lines, recordStart, featureStart, sequenceStart, currentLine, output)
+				})
 			} else {
-				//mainwg.Add(1)
-				parseGBRecord(&lines, recordStart, featureStart, currentLine, currentLine, output)
+				parserWG.Go(func() error {
+					return parseGBRecord(&lines, recordStart, featureStart, currentLine, currentLine, output)
+				})
 			}
 			recordStart = currentLine
 		}
 		currentLine++
 	}
+
+	err := parserWG.Wait()
+	if err != nil {
+		log.Println(err.Error())
+		return err
+	}
+
+	return nil
 }
 
-func parseGBRecord(lines *[]string, startpoint int, startpointqual int, startpointseq int, startpointnext int, output chan *bioproto.Genbank) {
+func parseGBRecord(lines *[]string, startpoint int, startpointqual int, startpointseq int, startpointnext int, output chan *bioproto.Genbank) error {
 	// DEBUG: fmt.Println(startpoint, startpointqual, startpointseq, startpointnext)
 	currentGenbankRecord := &bioproto.Genbank{}
 	parseHeader((*lines)[startpoint:startpointqual], currentGenbankRecord)
@@ -81,6 +96,8 @@ func parseGBRecord(lines *[]string, startpoint int, startpointqual int, startpoi
 	//printRecord(currentGenbankRecord)
 	output <- currentGenbankRecord
 	//wg.Done()
+
+	return nil
 }
 
 func parseHeader(lines []string, gbRecord *bioproto.Genbank) {
