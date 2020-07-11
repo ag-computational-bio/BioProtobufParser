@@ -72,7 +72,7 @@ func TestGBFFParserAndGenerator(t *testing.T) {
 }
 
 func TestFASTAParserAndGenerator(t *testing.T) {
-
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	// Add Waitgroup
 	var wg sync.WaitGroup
 

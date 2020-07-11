@@ -85,7 +85,12 @@ func (parser *GBParser) ReadAndParseFile(reader io.Reader, output chan *bioproto
 				}
 			}
 			parseGBRecordWrapper(lines, parseStats, output, &parserWG)
-			recordStart = currentLine
+			currentLine = 0
+			recordStart = 0
+			featureStart = 0
+			sequenceStart = 0
+
+			lines = make([]string, 0)
 		}
 		currentLine++
 	}
