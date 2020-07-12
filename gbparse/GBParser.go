@@ -74,7 +74,7 @@ func (parser *GBParser) ReadAndParseFile(reader io.Reader, output chan *bioproto
 					RecordStart:   recordStart,
 					FeatureStart:  featureStart,
 					SequenceStart: sequenceStart,
-					CurrentLine:   0,
+					CurrentLine:   currentLine,
 				}
 
 			} else {
@@ -230,6 +230,7 @@ func parseHeader(lines []string, gbRecord *bioproto.Genbank) {
 			}
 		}
 	}
+
 	// AddLastReference
 	RefList = append(RefList, currentRef)
 
