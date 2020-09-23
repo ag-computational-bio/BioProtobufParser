@@ -68,6 +68,7 @@ func (parser *GBParser) ReadAndParseFile(reader io.Reader, output chan *bioproto
 			hasSequence = true
 		} else if strings.HasPrefix(line, "//") {
 			var parseStats ParseStats
+			lines = lines[:len(lines)-1]
 			if hasSequence {
 				parseStats = ParseStats{
 					RecordStart:   recordStart,
@@ -85,7 +86,13 @@ func (parser *GBParser) ReadAndParseFile(reader io.Reader, output chan *bioproto
 				}
 			}
 			parseGBRecordWrapper(lines, parseStats, output, &parserWG)
-			recordStart = currentLine
+			currentLine = 0
+			recordStart = 0
+			featureStart = 0
+			sequenceStart = 0
+			hasSequence = false
+
+			lines = make([]string, 0)
 		}
 		currentLine++
 	}
@@ -111,7 +118,7 @@ func parseGBRecord(lines []string, parseStats ParseStats, output chan *bioproto.
 	// DEBUG: fmt.Println(startpoint, startpointqual, startpointseq, startpointnext)
 	currentGenbankRecord := &bioproto.Genbank{}
 	parseHeader((lines)[parseStats.RecordStart:parseStats.FeatureStart], currentGenbankRecord)
-	parseQualifier((lines)[parseStats.FeatureStart:parseStats.SequenceStart], currentGenbankRecord)
+	parseQualifier((lines)[parseStats.FeatureStart:parseStats.SequenceStart-1], currentGenbankRecord)
 	if parseStats.SequenceStart != parseStats.CurrentLine {
 		parseSequence((lines)[parseStats.SequenceStart:parseStats.CurrentLine], currentGenbankRecord)
 	}
@@ -223,6 +230,7 @@ func parseHeader(lines []string, gbRecord *bioproto.Genbank) {
 			}
 		}
 	}
+
 	// AddLastReference
 	RefList = append(RefList, currentRef)
 

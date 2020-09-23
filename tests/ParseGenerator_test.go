@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"compress/gzip"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -15,12 +16,20 @@ import (
 
 func TestGBFFParserAndGenerator(t *testing.T) {
 
+	basePath := "~/Downloads/refseq_archaea/archaea.%v.genomic.gbff.gz"
+
 	// Add Waitgroup
 	var wg sync.WaitGroup
 	// Open testfile
-	gbff, err := os.Open("../testfiles/archaea.6.genomic.gbff")
+	gbffGzip, err := os.Open(fmt.Sprintf(basePath, 2))
 	// Read file as bytebuffer for comparison
 	//filecontent, err := ioutil.ReadFile("../testfiles/archaea.1.genomic.gbff")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	gbff, err := gzip.NewReader(gbffGzip)
 
 	if err != nil {
 		log.Fatal(err)
@@ -41,6 +50,13 @@ func TestGBFFParserAndGenerator(t *testing.T) {
 		}
 		wg.Done()
 	}()
+
+	go func() {
+		for range output {
+
+		}
+	}()
+
 	wg.Wait()
 
 	log.Println("Parsing complete, reading protobuf...")
@@ -72,7 +88,7 @@ func TestGBFFParserAndGenerator(t *testing.T) {
 }
 
 func TestFASTAParserAndGenerator(t *testing.T) {
-
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	// Add Waitgroup
 	var wg sync.WaitGroup
 
